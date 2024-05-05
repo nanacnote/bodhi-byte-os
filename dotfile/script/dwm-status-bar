@@ -1,0 +1,49 @@
+#!/bin/sh
+# REQUIRES FONT-AWESOME PACKAGE TO WORK PROPERLY
+
+
+cpu() {
+  cpu="$(ps -eo %cpu | awk '{sum +=$1} END {print sum}')"
+  echo "  $cpu% "
+}
+
+hdd(){
+  hdd="$(df -h ${HOME} | grep dev | awk '{printf $3 "/"  $2}')"
+  echo "  $hdd"
+}
+
+mem(){
+  mem="$(free -h | awk '/Mem:/ {printf $3 "/" $2}')"
+  echo "  $mem"
+}
+
+
+pkgs(){
+  pkgs="$(paru -Qqe | wc -l)"
+  echo "  $pkgs"
+}
+
+upgrades(){
+  upgrades="$(paru -Su | wc -l)"
+  echo "  $upgrades"
+}
+
+vol(){
+  vol="$(echo "0")"
+  echo "  $vol"
+}
+
+dte(){
+  dte="$(date +"%a, %b %d %R")"
+  echo "$dte"
+}
+
+status(){
+  echo "$(cpu) | $(mem) | $(hdd) | $(upgrades)  | $(pkgs)  | $(vol) | $(dte)"
+}
+
+
+while true; do
+  xsetroot -name "$(status)"
+  sleep 30s 
+done
