@@ -17,19 +17,18 @@ mem(){
   echo "  $mem"
 }
 
+upgrades(){
+  upgrades="$(paru -Qu | wc -l)"
+  echo "  $upgrades"
+}
 
 pkgs(){
   pkgs="$(paru -Qqe | wc -l)"
   echo "  $pkgs"
 }
 
-upgrades(){
-  upgrades="$(paru -Su | wc -l)"
-  echo "  $upgrades"
-}
-
 vol(){
-  vol="$(echo "0")"
+  vol="$(amixer get Master | grep -oE '[0-9]+%')"
   echo "  $vol"
 }
 
@@ -45,5 +44,5 @@ status(){
 
 while true; do
   xsetroot -name "$(status)"
-  sleep 30s 
+  sleep 10s 
 done
