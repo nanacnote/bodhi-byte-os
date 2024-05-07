@@ -2,6 +2,15 @@
 
 SCRIPT_NAME=$(basename "$0")
 
+apply_symlinks() {
+    ln -sfv ${PWD}/dotfile/config/.zshrc ~/.zshrc
+    ln -sfv ${PWD}/dotfile/config/.xinitrc ~/.xinitrc
+    ln -sfv ${PWD}/dotfile/config/.vimrc ~/.vimrc
+    ln -sfv ${PWD}/dotfile/config/.ssh-config ~/.ssh/config
+
+    sudo ln -sfv ${PWD}/dotfile/script/on-login-script.sh /etc/profile.d/on-login-script.sh
+}
+
 install_dwm() {
     cd dwm || exit
     sudo make clean install
@@ -37,6 +46,7 @@ show_help() {
     Usage: $SCRIPT_NAME <command> [options]
 
     Commands:
+      apply-symlinks      Apply symlinks for configs and scripts.
       install-dwm         Install dwm.
       rebuild-dwm         Rebuild and reinstall dwm when config is updated.
       install-dwmblocks   Install dwmblocks.
@@ -48,6 +58,9 @@ EOF
 }
 
 case "$1" in
+    apply-symlinks)
+        apply_symlinks
+        ;;
     install-dwm)
         install_dwm
         ;;
