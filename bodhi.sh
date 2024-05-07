@@ -6,6 +6,7 @@ apply_symlinks() {
     ln -sfv ${PWD}/dotfile/config/.zshrc ~/.zshrc
     ln -sfv ${PWD}/dotfile/config/.xinitrc ~/.xinitrc
     ln -sfv ${PWD}/dotfile/config/.vimrc ~/.vimrc
+    ln -sfv ${PWD}/dotfile/config/.gitconfig ~/.gitconfig
     ln -sfv ${PWD}/dotfile/config/.ssh-config ~/.ssh/config
 
     sudo ln -sfv ${PWD}/dotfile/script/on-login-script.sh /etc/profile.d/on-login-script.sh

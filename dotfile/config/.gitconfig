@@ -1,0 +1,20 @@
+[user]
+	email = no@hiramlabs.com
+	name = Nana Owusu
+[init]
+	defaultBranch = main
+[color]
+	ui = auto
+[alias]
+	aliases = !git config --get-regexp alias | sed -re 's/alias\\.(\\S*)\\s(.*)$/\\1 = \\2/g'
+	a = add
+	c = commit
+	can = commit --amend --no-edit
+	ca = commit --amend
+	co = checkout
+	st = status
+	lg = log --oneline
+	reset = reset --soft HEAD~1
+[core]
+	editor = vim
+	pager = cat
