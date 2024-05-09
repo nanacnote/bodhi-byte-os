@@ -3,6 +3,7 @@
 SCRIPT_NAME=$(basename "$0")
 
 apply_symlinks() {
+    ln -sfv ${PWD}/dotfile/config/.zshenv ~/.zshenv
     ln -sfv ${PWD}/dotfile/config/.zshrc ~/.zshrc
     ln -sfv ${PWD}/dotfile/config/.xinitrc ~/.xinitrc
     ln -sfv ${PWD}/dotfile/config/.vimrc ~/.vimrc
