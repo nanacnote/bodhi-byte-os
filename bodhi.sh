@@ -2,7 +2,14 @@
 
 SCRIPT_NAME=$(basename "$0")
 
+# TODO:
+# command to list utils
+
 apply_symlinks() {
+    sudo ln -sfv ${PWD}/bodhi.sh /usr/local/bin/bodhi
+    sudo ln -sfv ${PWD}/utils/groqai.sh /usr/local/bin/groqai
+
+
     ln -sfv ${PWD}/dotfiles/config/.zshenv ~/.zshenv
     ln -sfv ${PWD}/dotfiles/config/.zshrc ~/.zshrc
     ln -sfv ${PWD}/dotfiles/config/.xinitrc ~/.xinitrc

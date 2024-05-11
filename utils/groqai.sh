@@ -2,7 +2,7 @@
 
 # requires jq and bat
 
-CONTENT="$1"
+CONTENT="${1:?Missing query!}"
 GROQ_API_KEY="${GROQ_API_KEY:-}"
 ENDPOINT="https://api.groq.com/openai/v1/chat/completions"
 
