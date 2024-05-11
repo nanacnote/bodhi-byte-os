@@ -3,14 +3,14 @@
 SCRIPT_NAME=$(basename "$0")
 
 apply_symlinks() {
-    ln -sfv ${PWD}/dotfile/config/.zshenv ~/.zshenv
-    ln -sfv ${PWD}/dotfile/config/.zshrc ~/.zshrc
-    ln -sfv ${PWD}/dotfile/config/.xinitrc ~/.xinitrc
-    ln -sfv ${PWD}/dotfile/config/.vimrc ~/.vimrc
-    ln -sfv ${PWD}/dotfile/config/.gitconfig ~/.gitconfig
-    ln -sfv ${PWD}/dotfile/config/.ssh-config ~/.ssh/config
+    ln -sfv ${PWD}/dotfiles/config/.zshenv ~/.zshenv
+    ln -sfv ${PWD}/dotfiles/config/.zshrc ~/.zshrc
+    ln -sfv ${PWD}/dotfiles/config/.xinitrc ~/.xinitrc
+    ln -sfv ${PWD}/dotfiles/config/.vimrc ~/.vimrc
+    ln -sfv ${PWD}/dotfiles/config/.gitconfig ~/.gitconfig
+    ln -sfv ${PWD}/dotfiles/config/.ssh-config ~/.ssh/config
 
-    sudo ln -sfv ${PWD}/dotfile/script/on-login-script.sh /etc/profile.d/on-login-script.sh
+    sudo ln -sfv ${PWD}/dotfiles/script/on-login-script.sh /etc/profile.d/on-login-script.sh
 }
 
 install_dwm() {
