@@ -27,3 +27,17 @@ source /usr/share/zsh/plugins/zsh-autosuggestions/zsh-autosuggestions.zsh
 
 # --- Set PS1 customisation via oh-my-posh ---
 eval "$(oh-my-posh init zsh --config ~/.cache/oh-my-posh/themes/gruvbox.omp.json)"
+
+# --- nvm ---
+export NVM_DIR="${HOME}/.nvm"
+[[ -s "$NVM_DIR/nvm.sh" ]] && source "$NVM_DIR/nvm.sh"
+
+# --- pyenv --- 
+export PYENV_ROOT="$HOME/.pyenv"
+[[ -d $PYENV_ROOT/bin ]] && export PATH="$PYENV_ROOT/bin:$PATH"
+eval "$(pyenv init -)"
+
+# --- sdkman ---
+export SDKMAN_DIR="$HOME/.sdkman"
+[[ -s "${SDKMAN_DIR}/bin/sdkman-init.sh" ]] && source "${SDKMAN_DIR}/bin/sdkman-init.sh"
+
