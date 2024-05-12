@@ -43,7 +43,7 @@ feh \
     --bg-fill "${HOME}/Documents/images/wallpaper/current"
 
 
-${HOME}/.config/bodhi-byte-os/dotfile/script/dwm-status-bar.sh &
+${HOME}/.config/bodhi-byte-os/dotfiles/script/dwm-status-bar.sh &
 
 picom &
 st &
