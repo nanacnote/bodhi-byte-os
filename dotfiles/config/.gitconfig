@@ -8,13 +8,18 @@
 [alias]
 	aliases = !git config --get-regexp alias | sed -re 's/alias\\.(\\S*)\\s(.*)$/\\1 = \\2/g'
 	a = add
+	aa = add .
 	c = commit
+	cm = commit -m
 	can = commit --amend --no-edit
 	ca = commit --amend
+	cam = commit --amend -m
 	co = checkout
 	st = status
 	lg = log --oneline
+	lgg = log --oneline --graph --decorate --all
+	rir = rebase -i --root
 	reset = reset --soft HEAD~
 [core]
 	editor = vim
-	pager = cat
+	pager = bat
