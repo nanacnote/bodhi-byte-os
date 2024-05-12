@@ -18,6 +18,7 @@
 	st = status
 	lg = log --oneline
 	lgg = log --oneline --graph --decorate --all
+	lgd = log --pretty=format:'%C(auto)%h %d %s %C(dim white)<%cr by %an>%Creset' --abbrev-commit --date=relative
 	rir = rebase -i --root
 	reset = reset --soft HEAD~
 [core]
