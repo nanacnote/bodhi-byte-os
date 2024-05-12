@@ -14,7 +14,7 @@
 	co = checkout
 	st = status
 	lg = log --oneline
-	reset = reset --soft HEAD~1
+	reset = reset --soft HEAD~
 [core]
 	editor = vim
 	pager = cat
