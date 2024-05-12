@@ -12,12 +12,16 @@ compinit
 # End of lines added by compinstall
 
 
+bindkey ';5C' forward-word   # ctrl+-> partial(word) select suggestion 
+bindkey ';5D' backward-word   # ctrl+<- partial(word) reverse suggestion 
+
 #####################
 #       CUSTOM      #
 #####################
 
 # --- Share history across sessions and terminals ---
 HISTDUP=erase               # Erase duplicates from history
+HISTCONTROL=ignoreboth      # Lines beginning with space are not saved
 setopt  appendhistory       # Append history (not overwriting)
 setopt  sharehistory        # Share history across terminals 
 setopt  incappendhistory    # Immediately append to history (no waiting till after session)
