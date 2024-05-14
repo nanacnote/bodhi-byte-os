@@ -50,6 +50,16 @@ rebuild_st() {
     sudo make clean install
 }
 
+install_dmenu() {
+    cd dmenu || exit
+    sudo make clean install
+}
+
+rebuild_dmenu() {
+    cd dmenu || exit
+    sudo make clean install
+}
+
 show_help() {
     cat <<-EOF
     Usage: $SCRIPT_NAME <command> [options]
@@ -62,6 +72,8 @@ show_help() {
       rebuild-dwmblocks   Rebuild and reinstall dwmblocks when config is updated.
       install-st          Install st.
       rebuild-st          Rebuild and reinstall st when config is updated.
+      install-dmenu          Install dmenu.
+      rebuild-dmenu       Rebuild and reinstall dmenu when config is updated.
       help                Show this help message.
 EOF
 }
@@ -87,6 +99,12 @@ case "$1" in
         ;;
     rebuild-st)
         rebuild_st
+        ;;
+    install-dmenu)
+        install_dmenu
+        ;;
+    rebuild-dmenu)
+        rebuild_dmenu
         ;;
     help | *)
         show_help
