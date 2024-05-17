@@ -16,7 +16,10 @@ apply_symlinks() {
     ln -sfv ${PWD}/dotfiles/config/.vimrc ~/.vimrc
     ln -sfv ${PWD}/dotfiles/config/.gitconfig ~/.gitconfig
     ln -sfv ${PWD}/dotfiles/config/.ssh-config ~/.ssh/config
+    ln -sfv ${PWD}/dotfiles/config/picom.conf ~/.config/picom/picom.conf
 
+
+    sudo ln -sfv ${PWD}/dotfiles/config/custom-gruvbox.omp.json ~/.cache/oh-my-posh/themes/custom-gruvbox.omp.json
     sudo ln -sfv ${PWD}/dotfiles/script/on-login-script.sh /etc/profile.d/on-login-script.sh
 }
 

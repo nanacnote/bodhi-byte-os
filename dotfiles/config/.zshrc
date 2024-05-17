@@ -30,7 +30,7 @@ setopt  incappendhistory    # Immediately append to history (no waiting till aft
 source /usr/share/zsh/plugins/zsh-autosuggestions/zsh-autosuggestions.zsh
 
 # --- Set PS1 customisation via oh-my-posh ---
-eval "$(oh-my-posh init zsh --config ~/.cache/oh-my-posh/themes/gruvbox.omp.json)"
+eval "$(oh-my-posh init zsh --config ~/.cache/oh-my-posh/themes/custom-gruvbox.omp.json)"
 
 # --- nvm ---
 export NVM_DIR="${HOME}/.nvm"
