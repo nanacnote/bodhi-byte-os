@@ -7,6 +7,7 @@ SCRIPT_NAME=$(basename "$0")
 
 apply_symlinks() {
     sudo ln -sfv ${PWD}/bodhi.sh /usr/local/bin/bodhi
+    sudo ln -sfv ${PWD}/utils/custom-dmenu-run /usr/local/bin/custom-dmenu-run
     sudo ln -sfv ${PWD}/utils/groqai.sh /usr/local/bin/groqai
 
 
