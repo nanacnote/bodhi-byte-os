@@ -19,10 +19,16 @@
 	lg = log --oneline
 	lgg = log --oneline --graph --decorate --all
 	lgd = log --pretty=format:'%C(auto)%h %d %s %C(dim white)<%cr by %an>%Creset' --abbrev-commit --date=relative
-	rir = rebase -i --root
-	reset = reset --soft HEAD~
+
+	rrebase = rebase -i --root
+	rreset = reset --soft HEAD~
+	ggrep = grep -n --heading
+	ffetch = fetch --all --prune --tag
 [core]
 	editor = vim
 	pager = bat
 [push]
+	default = simple
 	autoSetupRemote = true
+[merge]
+    conflictstyle = diff3
