@@ -18,8 +18,9 @@ mem(){
 }
 
 upgrades(){
-  upgrades="$(paru -Qu | wc -l)"
-  echo "  $upgrades"
+#   upgrades="$(paru -Qu | wc -l)"
+#   echo "  $upgrades"
+  echo "  0"
 }
 
 pkgs(){
