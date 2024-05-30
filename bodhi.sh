@@ -1,66 +1,73 @@
 #!/bin/sh
 
 SCRIPT_NAME=$(basename "$0")
+BODHI_ROOT=$(dirname "$(realpath "$0")")
 
 # TODO:
-# command to list utils
+# - command to list utils
+# - add auto complete
 
 apply_symlinks() {
-    sudo ln -sfv ${PWD}/bodhi.sh /usr/local/bin/bodhi
-    sudo ln -sfv ${PWD}/utils/custom-dmenu-run /usr/local/bin/custom-dmenu-run
-    sudo ln -sfv ${PWD}/utils/groqai.sh /usr/local/bin/groqai
+    sudo ln -sfv ${BODHI_ROOT}/bodhi.sh /usr/local/bin/bodhi
+    sudo ln -sfv ${BODHI_ROOT}/utils/custom-dmenu-run /usr/local/bin/custom-dmenu-run
+    sudo ln -sfv ${BODHI_ROOT}/utils/groqai.sh /usr/local/bin/groqai
 
 
-    ln -sfv ${PWD}/dotfiles/config/.zshenv ~/.zshenv
-    ln -sfv ${PWD}/dotfiles/config/.zshrc ~/.zshrc
-    ln -sfv ${PWD}/dotfiles/config/.xinitrc ~/.xinitrc
-    ln -sfv ${PWD}/dotfiles/config/.vimrc ~/.vimrc
-    ln -sfv ${PWD}/dotfiles/config/.gitconfig ~/.gitconfig
-    ln -sfv ${PWD}/dotfiles/config/.ssh-config ~/.ssh/config
-    ln -sfv ${PWD}/dotfiles/config/picom.conf ~/.config/picom/picom.conf
+    ln -sfv ${BODHI_ROOT}/dotfiles/config/.zshenv ~/.zshenv
+    ln -sfv ${BODHI_ROOT}/dotfiles/config/.zshrc ~/.zshrc
+    ln -sfv ${BODHI_ROOT}/dotfiles/config/.xinitrc ~/.xinitrc
+    ln -sfv ${BODHI_ROOT}/dotfiles/config/.vimrc ~/.vimrc
+    ln -sfv ${BODHI_ROOT}/dotfiles/config/.gitconfig ~/.gitconfig
+    ln -sfv ${BODHI_ROOT}/dotfiles/config/.ssh-config ~/.ssh/config
+    ln -sfv ${BODHI_ROOT}/dotfiles/config/picom.conf ~/.config/picom/picom.conf
 
 
-    sudo ln -sfv ${PWD}/dotfiles/config/custom-gruvbox.omp.json ~/.cache/oh-my-posh/themes/custom-gruvbox.omp.json
-    sudo ln -sfv ${PWD}/dotfiles/script/on-login-script.sh /etc/profile.d/on-login-script.sh
+    sudo ln -sfv ${BODHI_ROOT}/dotfiles/config/custom-gruvbox.omp.json ~/.cache/oh-my-posh/themes/custom-gruvbox.omp.json
+    sudo ln -sfv ${BODHI_ROOT}/dotfiles/script/on-login-script.sh /etc/profile.d/on-login-script.sh
 }
 
 install_dwm() {
-    cd dwm || exit
+    cd ${BODHI_ROOT}/dwm || exit
     sudo make clean install
 }
-
 rebuild_dwm() {
-    cd dwm || exit
-    sudo make clean install
-}
-
-install_dwmblocks() {
-    cd dwmblocks || exit
-    sudo make clean install
-}
-
-rebuild_dwmblocks() {
-    cd dwmblocks || exit
+    cd ${BODHI_ROOT}/dwm || exit
     sudo make clean install
 }
 
 install_st() {
-    cd st || exit
+    cd ${BODHI_ROOT}/st || exit
     sudo make clean install
 }
-
 rebuild_st() {
-    cd st || exit
+    cd ${BODHI_ROOT}/st || exit
     sudo make clean install
 }
 
 install_dmenu() {
-    cd dmenu || exit
+    cd ${BODHI_ROOT}/dmenu || exit
+    sudo make clean install
+}
+rebuild_dmenu() {
+    cd ${BODHI_ROOT}/dmenu || exit
     sudo make clean install
 }
 
-rebuild_dmenu() {
-    cd dmenu || exit
+install_slock() {
+    cd ${BODHI_ROOT}/slock || exit
+    sudo make clean install
+}
+rebuild_slock() {
+    cd ${BODHI_ROOT}/slock || exit
+    sudo make clean install
+}
+
+install_dwmblocks() {
+    cd ${BODHI_ROOT}/dwmblocks || exit
+    sudo make clean install
+}
+rebuild_dwmblocks() {
+    cd ${BODHI_ROOT}/dwmblocks || exit
     sudo make clean install
 }
 
@@ -71,13 +78,15 @@ show_help() {
     Commands:
       apply-symlinks      Apply symlinks for configs and scripts.
       install-dwm         Install dwm.
-      rebuild-dwm         Rebuild and reinstall dwm when config is updated.
-      install-dwmblocks   Install dwmblocks.
-      rebuild-dwmblocks   Rebuild and reinstall dwmblocks when config is updated.
+      rebuild-dwm         Reinstall dwm when config is updated.
       install-st          Install st.
-      rebuild-st          Rebuild and reinstall st when config is updated.
-      install-dmenu          Install dmenu.
-      rebuild-dmenu       Rebuild and reinstall dmenu when config is updated.
+      rebuild-st          Reinstall st when config is updated.
+      install-dmenu       Install dmenu.
+      rebuild-dmenu       Reinstall dmenu when config is updated.
+      install-slock       Install slock.
+      rebuild-slock       Reinstall slock when config is updated.
+      install-dwmblocks   Install dwmblocks.
+      rebuild-dwmblocks   Reinstall dwmblocks when config is updated.
       help                Show this help message.
 EOF
 }
@@ -92,12 +101,6 @@ case "$1" in
     rebuild-dwm)
         rebuild_dwm
         ;;
-    install-dwmblocks)
-        install_dwmblocks
-        ;;
-    rebuild-dwmblocks)
-        rebuild_dwmblocks
-        ;;
     install-st)
         install_st
         ;;
@@ -109,6 +112,18 @@ case "$1" in
         ;;
     rebuild-dmenu)
         rebuild_dmenu
+        ;;
+    install-slock)
+        install_slock
+        ;;
+    rebuild-slock)
+        rebuild_slock
+        ;;
+    install-dwmblocks)
+        install_dwmblocks
+        ;;
+    rebuild-dwmblocks)
+        rebuild_dwmblocks
         ;;
     help | *)
         show_help
