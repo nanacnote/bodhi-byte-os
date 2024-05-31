@@ -16,6 +16,7 @@ apply_symlinks() {
     ln -sfv ${BODHI_ROOT}/dotfiles/config/.zshenv ~/.zshenv
     ln -sfv ${BODHI_ROOT}/dotfiles/config/.zshrc ~/.zshrc
     ln -sfv ${BODHI_ROOT}/dotfiles/config/.xinitrc ~/.xinitrc
+    ln -sfv ${BODHI_ROOT}/dotfiles/config/.Xmodmap ~/.Xmodmap
     ln -sfv ${BODHI_ROOT}/dotfiles/config/.vimrc ~/.vimrc
     ln -sfv ${BODHI_ROOT}/dotfiles/config/.gitconfig ~/.gitconfig
     ln -sfv ${BODHI_ROOT}/dotfiles/config/.ssh-config ~/.ssh/config
