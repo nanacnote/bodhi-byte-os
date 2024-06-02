@@ -22,6 +22,7 @@ iwd
 jack2
 jack2-dbus
 jq
+lazygit
 lf
 libffado
 libnotify
@@ -37,6 +38,7 @@ pacman-contrib
 paru
 paru-debug
 picom
+ripgrep
 tcpdump
 texinfo
 ttf-fira-mono
