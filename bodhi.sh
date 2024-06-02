@@ -7,6 +7,12 @@ BODHI_ROOT=$(dirname "$(realpath "$0")")
 # - command to list utils
 # - add auto complete
 
+save_pkglist() {
+    paru -Qqe > ${BODHI_ROOT}/dotfiles/package/pkglist.txt
+    paru -Qqen > ${BODHI_ROOT}/dotfiles/package/pkglist.official.txt
+    paru -Qqem > ${BODHI_ROOT}/dotfiles/package/pkglist.foreign.txt
+}
+
 apply_symlinks() {
     sudo ln -sfv ${BODHI_ROOT}/bodhi.sh /usr/local/bin/bodhi
     sudo ln -sfv ${BODHI_ROOT}/utils/custom-dmenu-run.sh /usr/local/bin/custom-dmenu-run
@@ -77,6 +83,7 @@ show_help() {
     Usage: $SCRIPT_NAME <command> [options]
 
     Commands:
+      save-pkglist        Save currently installed packages to txt file.
       apply-symlinks      Apply symlinks for configs and scripts.
       install-dwm         Install dwm.
       rebuild-dwm         Reinstall dwm when config is updated.
@@ -93,6 +100,9 @@ EOF
 }
 
 case "$1" in
+    save-pkglist)
+        save_pkglist
+        ;;
     apply-symlinks)
         apply_symlinks
         ;;
