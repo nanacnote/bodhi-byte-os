@@ -14,16 +14,21 @@ bindkey '^[[1;5B' history-search-backward # ctrl+down arrow - search backward fo
 
 
 # --- options ---
+# https://zsh.sourceforge.io/Doc/Release/Options.html#Description-of-Options
 HISTFILE=~/.histfile
-HISTSIZE=1000
-SAVEHIST=1000
-HISTDUP=erase               # Erase duplicates from history
-HISTCONTROL=ignoreboth      # Lines beginning with space are not saved
-setopt  appendhistory       # Append history (not overwriting)
-setopt  sharehistory        # Share history across terminals 
-setopt  incappendhistory    # Immediately append to history (no waiting till after session)
-setopt  autocd              # Change directory without cd
+HISTSIZE=2000
+SAVEHIST=2000                   # History should be saved to HISTFILE always
+setopt  APPEND_HISTORY
+setopt  INC_APPEND_HISTORY
+setopt  HIST_IGNORE_ALL_DUPS
+setopt  HIST_IGNORE_DUPS
+setopt  HIST_SAVE_NO_DUPS
+setopt  HIST_IGNORE_SPACE
+setopt  HIST_EXPIRE_DUPS_FIRST
+setopt  HIST_REDUCE_BLANKS
+setopt  HIST_VERIFY
 
+setopt  AUTO_CD                 # Change directory without cd
 
 
 # --- hooks ---
