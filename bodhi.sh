@@ -27,6 +27,7 @@ apply_symlinks() {
     ln -sfv ${BODHI_ROOT}/dotfiles/config/.gitconfig ~/.gitconfig
     ln -sfv ${BODHI_ROOT}/dotfiles/config/.ssh-config ~/.ssh/config
     ln -sfv ${BODHI_ROOT}/dotfiles/config/picom.conf ~/.config/picom/picom.conf
+    ln -sfv ${BODHI_ROOT}/dotfiles/config/init.lua ~/.config/nvim/init.lua
 
 
     sudo ln -sfv ${BODHI_ROOT}/dotfiles/config/custom-gruvbox.omp.json ~/.cache/oh-my-posh/themes/custom-gruvbox.omp.json
