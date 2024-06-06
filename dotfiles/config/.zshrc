@@ -18,6 +18,8 @@ bindkey '^[[1;5B' history-search-backward # ctrl+down arrow - search backward fo
 HISTFILE=~/.histfile
 HISTSIZE=2000
 SAVEHIST=2000                   # History should be saved to HISTFILE always
+HISTORY_IGNORE="(ls|ls *|cd|cd *|cat|cat *|eza|eza *|rm|rm *|man|man *|bat|bat *|pwd|exit|clear|)"
+HISTORY_IGNORE="${HISTORY_IGNORE}(nvim *|vim *|)"
 setopt  APPEND_HISTORY
 setopt  INC_APPEND_HISTORY
 setopt  HIST_IGNORE_ALL_DUPS

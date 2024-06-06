@@ -1,9 +1,7 @@
 # aliases
-alias man=' man'
-alias cd=' cd'
-alias rm=' rm -i'
-alias ls=' eza --color=auto'
-alias la=' eza -la --color=auto'
+alias rm='rm -i'
+alias ls='eza --color=auto'
+alias la='eza -la --color=auto'
 alias cat='bat'
 alias pacman='paru'
 alias grep='grep --color=auto'
