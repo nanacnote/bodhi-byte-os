@@ -3,6 +3,7 @@ base
 base-devel
 bat
 bluez
+bluez-libs
 bluez-utils
 docker
 dunst
@@ -24,6 +25,7 @@ jack2-dbus
 jq
 lazygit
 lf
+libfdk-aac
 libffado
 libnotify
 linux-firmware
@@ -39,6 +41,7 @@ paru
 paru-debug
 picom
 ripgrep
+sbc
 tcpdump
 texinfo
 ttf-fira-mono
