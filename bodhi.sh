@@ -39,46 +39,45 @@ install_dwm() {
     cd ${BODHI_ROOT}/dwm || exit
     sudo make clean install
 }
-rebuild_dwm() {
-    cd ${BODHI_ROOT}/dwm || exit
-    sudo make clean install
-}
+
 
 install_st() {
     cd ${BODHI_ROOT}/st || exit
     sudo make clean install
 }
-rebuild_st() {
-    cd ${BODHI_ROOT}/st || exit
-    sudo make clean install
-}
+
 
 install_dmenu() {
     cd ${BODHI_ROOT}/dmenu || exit
     sudo make clean install
 }
-rebuild_dmenu() {
-    cd ${BODHI_ROOT}/dmenu || exit
-    sudo make clean install
-}
+
 
 install_slock() {
     cd ${BODHI_ROOT}/slock || exit
     sudo make clean install
 }
-rebuild_slock() {
-    cd ${BODHI_ROOT}/slock || exit
-    sudo make clean install
-}
+
 
 install_dwmblocks() {
     cd ${BODHI_ROOT}/dwmblocks || exit
     sudo make clean install
 }
-rebuild_dwmblocks() {
-    cd ${BODHI_ROOT}/dwmblocks || exit
-    sudo make clean install
+
+
+install_bluez_alsa() {
+    cd bluez-alsa
+        autoreconf --install --force
+        mkdir -p build
+        cd build
+            ../configure --enable-aac --enable-systemd
+            make
+            sudo make install
+    cd ${BODHI_ROOT}
+    sudo systemctl enable bluealsa.service
+            # use sudo make uninstall to remove
 }
+
 
 show_help() {
     cat <<-EOF
@@ -87,16 +86,12 @@ show_help() {
     Commands:
       save-pkglist        Save currently installed packages to txt file.
       apply-symlinks      Apply symlinks for configs and scripts.
-      install-dwm         Install dwm.
-      rebuild-dwm         Reinstall dwm when config is updated.
-      install-st          Install st.
-      rebuild-st          Reinstall st when config is updated.
-      install-dmenu       Install dmenu.
-      rebuild-dmenu       Reinstall dmenu when config is updated.
-      install-slock       Install slock.
-      rebuild-slock       Reinstall slock when config is updated.
-      install-dwmblocks   Install dwmblocks.
-      rebuild-dwmblocks   Reinstall dwmblocks when config is updated.
+      install-dwm         Install/rebuild dwm.
+      install-st          Install/rebuild st.
+      install-dmenu       Install/rebuild dmenu.
+      install-slock       Install/rebuild slock.
+      install-dwmblocks   Install/rebuild dwmblocks.
+      install-bleuz-alsa  Install bluez-alsa daemon and utils.
       help                Show this help message.
 EOF
 }
@@ -111,32 +106,20 @@ case "$1" in
     install-dwm)
         install_dwm
         ;;
-    rebuild-dwm)
-        rebuild_dwm
-        ;;
     install-st)
         install_st
-        ;;
-    rebuild-st)
-        rebuild_st
         ;;
     install-dmenu)
         install_dmenu
         ;;
-    rebuild-dmenu)
-        rebuild_dmenu
-        ;;
     install-slock)
         install_slock
-        ;;
-    rebuild-slock)
-        rebuild_slock
         ;;
     install-dwmblocks)
         install_dwmblocks
         ;;
-    rebuild-dwmblocks)
-        rebuild_dwmblocks
+    install-bluez-alsa)
+        install_bluez_alsa
         ;;
     help | *)
         show_help
