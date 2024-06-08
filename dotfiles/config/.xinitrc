@@ -46,5 +46,4 @@ feh \
 ${HOME}/.config/bodhi-byte-os/dotfiles/script/dwm-status-bar.sh &
 
 picom &
-st &
 exec dwm
