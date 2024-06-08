@@ -337,6 +337,7 @@ keymap('n', '<leader>ff', builtin.find_files, opts)
 keymap('n', '<leader>fg', builtin.live_grep, opts)
 keymap('n', '<leader>fb', builtin.buffers, opts)
 keymap('n', '<leader>fh', builtin.help_tags, opts)
+keymap('n', '<leader>fa', '<cmd>lua require("telescope.builtin").find_files({hidden=true})<CR>', opts)
 
 
 ---------------------------------------------------------------
