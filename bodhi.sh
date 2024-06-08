@@ -75,7 +75,8 @@ install_bluez_alsa() {
             sudo make install
     cd ${BODHI_ROOT}
     sudo systemctl enable bluealsa.service
-            # use sudo make uninstall to remove
+    sudo systemctl enable bluealsa-aplay.service
+    # use sudo make uninstall to remove
 }
 
 
