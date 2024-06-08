@@ -105,5 +105,22 @@ let g:airline#extensions#tabline#buffer_idx_mode=1      " Show buffer number in 
 let g:airline_powerline_fonts=1                         " User powerline font with status bar for arrows
 let g:airline_theme='gruvbox'                           " Use gruvbox theme for airline
 
+" Use a line cursor within insert mode,
+" an underline cursor within replace mode,
+" and a block cursor everywhere else.
+"
+" Reference chart of values:
+"   Ps = 0  -> blinking block.
+"   Ps = 1  -> blinking block (default).
+"   Ps = 2  -> steady block.
+"   Ps = 3  -> blinking underline.
+"   Ps = 4  -> steady underline.
+"   Ps = 5  -> blinking bar (xterm).
+"   Ps = 6  -> steady bar (xterm).
+let &t_SI = "\e[6 q"
+let &t_EI = "\e[2 q"
+let &t_SR = "\e[4 q"
+autocmd VimEnter * execute 'silent !echo -ne "\e[2 q"'
+
 colorscheme gruvbox
 
