@@ -14,6 +14,9 @@ handler() {
         "Firefox")
             nohup firefox > /tmp/nohup.firefox.out 2>&1 & disown;exit
             ;;
+        "QjackCtl")
+            nohup qjackctl > /tmp/nohup.qjackctl.out 2>&1 & disown;exit
+            ;;
         *)
             :
             ;;
@@ -27,6 +30,7 @@ Logout
 Reboot
 Shutdown
 Firefox
+QjackCtl
 EOF
 )
 
