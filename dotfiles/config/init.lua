@@ -1,6 +1,14 @@
 ---------------------------------------------------------------
 --- => General
 ---------------------------------------------------------------
+-- disable language provider support
+-- (lua and vimscript plugins only)
+vim.g.loaded_perl_provider = 0
+vim.g.loaded_ruby_provider = 0
+vim.g.loaded_node_provider = 0
+vim.g.loaded_python_provider = 0
+vim.g.loaded_python3_provider = 0
+
 -- Set utf8 as standard encoding and en_US as the standard language
 vim.opt.encoding = 'utf-8'
 vim.opt.langmenu = 'en'
@@ -141,13 +149,17 @@ vim.opt.signcolumn = 'auto'
 -- Add word suggestion to autocomplete
 vim.opt.complete:append('kspell')
 
+-- Add spell check
+vim.opt.spell = true
+vim.opt.spelllang = 'en'
+
 -- Points to custom word dictionary file
 vim.opt.spellfile = vim.fn.expand('~/.vim/spell/en.utf-8.add')
 
 -- Ignore compiled files
 vim.opt.wildignore = '*.o,*~,*.pyc,*/.git/*,*/.hg/*,*/.svn/*,*/.DS_Store'
 
--- Disable netrw 
+-- Disable netrw
 vim.g.loaded_netrw = 1
 vim.g.loaded_netrwPlugin = 1
 
@@ -164,19 +176,27 @@ local plugins = {
     { 'ellisonleao/gruvbox.nvim' },
     { 'lewis6991/gitsigns.nvim' },
     { 'windwp/nvim-autopairs' },
-    { 'akinsho/toggleterm.nvim' }
+    { 'akinsho/toggleterm.nvim' },
+    { 'neovim/nvim-lspconfig' },
+    { 'williamboman/mason.nvim' },
+    { 'williamboman/mason-lspconfig.nvim' },
+    { 'hrsh7th/cmp-nvim-lsp' },
+    { 'hrsh7th/nvim-cmp' },
+    { 'hrsh7th/cmp-path' },
+    { 'hrsh7th/cmp-buffer' },
+    { 'L3MON4D3/LuaSnip' },
 }
 
 local lazypath = vim.fn.stdpath('data') .. '/lazy/lazy.nvim'
 if not (vim.uv or vim.loop).fs_stat(lazypath) then
-  vim.fn.system({
-    'git',
-    'clone',
-    '--filter=blob:none',
-    'https://github.com/folke/lazy.nvim.git',
-    '--branch=stable', -- latest stable release
-    lazypath,
-  })
+    vim.fn.system({
+        'git',
+        'clone',
+        '--filter=blob:none',
+        'https://github.com/folke/lazy.nvim.git',
+        '--branch=stable', -- latest stable release
+        lazypath,
+    })
 end
 vim.opt.rtp:prepend(lazypath)
 require('lazy').setup(plugins)
@@ -199,23 +219,23 @@ require('toggleterm').setup()
 --- => Functions
 ---------------------------------------------------------------
 -- Switch to the next window in a circular manner
-function _cycle_windows()
-  local current_win = vim.api.nvim_get_current_win()
-  local windows = vim.api.nvim_list_wins()
-  
-  for i, win in ipairs(windows) do
-    if win == current_win then
-      local next_win = windows[(i % #windows) + 1]
-      vim.api.nvim_set_current_win(next_win)
-      break
+function _G._cycle_windows()
+    local current_win = vim.api.nvim_get_current_win()
+    local windows = vim.api.nvim_list_wins()
+
+    for i, win in ipairs(windows) do
+        if win == current_win then
+            local next_win = windows[(i % #windows) + 1]
+            vim.api.nvim_set_current_win(next_win)
+            break
+        end
     end
-  end
 end
 
 -- display a floating terminal
-function _toggle_popup_term()
-    local Terminal  = require('toggleterm.terminal').Terminal
-    local lazygit = Terminal:new({
+function _G._toggle_float_term()
+    local Terminal = require('toggleterm.terminal').Terminal
+    local lazygit  = Terminal:new({
         hidden = true,
         count = 0,
         direction = "float",
@@ -227,9 +247,9 @@ function _toggle_popup_term()
 end
 
 -- start lazygit as a floating terminal
-function _toggle_lazygit_term()
-    local Terminal  = require('toggleterm.terminal').Terminal
-    local lazygit = Terminal:new({
+function _G._toggle_lazygit_term()
+    local Terminal = require('toggleterm.terminal').Terminal
+    local lazygit  = Terminal:new({
         cmd = "lazygit",
         hidden = true,
         count = 0,
@@ -240,7 +260,6 @@ function _toggle_lazygit_term()
     })
     lazygit:toggle()
 end
-
 
 ---------------------------------------------------------------
 --- => Keymaps
@@ -259,7 +278,7 @@ keymap('i', 'jj', '<ESC>', opts)
 
 -- TERMINAL MODE
 -- Exit terminal mode
-keymap('t', '<ESC>', [[<C-\><C-n>]], opts)
+keymap('t', '<ESC><ESC>', [[<C-\><C-n>]], opts)
 
 -- Windows navigation (terminal mode)
 -- Redundant since you can hit esc and use normal mode keybindings
@@ -304,7 +323,7 @@ keymap('n', '<A-k>', ':m .-2<CR>==', opts)
 keymap('n', '<leader>tt', ':ToggleTerm hide_numbers=true<CR>', opts)
 keymap('n', '<leader>th', ':ToggleTerm direction=horizontal hide_numbers=true<CR>', opts)
 keymap('n', '<leader>tv', ':ToggleTerm direction=vertical hide_numbers=true<CR>', opts)
-keymap('n', '<leader>tp', '<cmd>lua _toggle_popup_term()<CR>', opts)
+keymap('n', '<leader>tf', '<cmd>lua _toggle_float_term()<CR>', opts)
 keymap('n', '<leader>tg', '<cmd>lua _toggle_lazygit_term()<CR>', opts)
 
 -- Nvimtree keybindings
@@ -324,7 +343,7 @@ keymap('n', '<leader>fh', builtin.help_tags, opts)
 --- => Automations
 ---------------------------------------------------------------
 -- Update buffer when changes are made from outside Neovim
-vim.api.nvim_create_autocmd({'FocusGained', 'BufEnter'}, {
+vim.api.nvim_create_autocmd({ 'FocusGained', 'BufEnter' }, {
     pattern = '*',
     command = 'checktime'
 })
@@ -346,3 +365,76 @@ vim.api.nvim_create_autocmd('BufLeave', {
     command = 'silent! update'
 })
 
+
+---------------------------------------------------------------
+--- => Language Server
+---------------------------------------------------------------
+-- Vim diagnostics
+vim.keymap.set('n', 'gl', '<cmd>lua vim.diagnostic.open_float()<cr>')
+vim.keymap.set('n', '[d', '<cmd>lua vim.diagnostic.goto_prev()<cr>')
+vim.keymap.set('n', ']d', '<cmd>lua vim.diagnostic.goto_next()<cr>')
+
+vim.api.nvim_create_autocmd('LspAttach', {
+    desc = 'LSP actions',
+    callback = function(event)
+        local lsp_opts = { buffer = event.buf }
+        vim.keymap.set('n', 'K', '<cmd>lua vim.lsp.buf.hover()<cr>', lsp_opts)
+        vim.keymap.set('n', 'gd', '<cmd>lua vim.lsp.buf.definition()<cr>', lsp_opts)
+        vim.keymap.set('n', 'gD', '<cmd>lua vim.lsp.buf.declaration()<cr>', lsp_opts)
+        vim.keymap.set('n', 'gi', '<cmd>lua vim.lsp.buf.implementation()<cr>', lsp_opts)
+        vim.keymap.set('n', 'go', '<cmd>lua vim.lsp.buf.type_definition()<cr>', lsp_opts)
+        vim.keymap.set('n', 'gr', '<cmd>lua vim.lsp.buf.references()<cr>', lsp_opts)
+        vim.keymap.set('n', 'gs', '<cmd>lua vim.lsp.buf.signature_help()<cr>', lsp_opts)
+        vim.keymap.set('n', '<F2>', '<cmd>lua vim.lsp.buf.rename()<cr>', lsp_opts)
+        vim.keymap.set({ 'n', 'x' }, '<F3>', '<cmd>lua vim.lsp.buf.format({async = true})<cr>', lsp_opts)
+        vim.keymap.set('n', '<F4>', '<cmd>lua vim.lsp.buf.code_action()<cr>', lsp_opts)
+    end
+})
+
+local lsp_capabilities = require('cmp_nvim_lsp').default_capabilities()
+require('mason').setup({})
+require('mason-lspconfig').setup({
+    ensure_installed = {
+        'lua_ls',
+        'tsserver',
+        'pyright',
+        'html',
+        'cssls',
+        'jsonls',
+        'clangd',
+        'jdtls',
+        'yamlls',
+        'bashls',
+        'dockerls',
+        -- 'gopls',
+        -- 'rust_analyzer',
+        -- 'solargraph',
+        -- 'intelephense',
+        -- 'hls',
+    },
+    handlers = {
+        function(server)
+            require('lspconfig')[server].setup({ capabilities = lsp_capabilities })
+        end,
+    },
+})
+
+local cmp = require('cmp')
+cmp.setup({
+    sources = {
+        { name = 'nvim_lsp' },
+        { name = 'path' },
+        { name = 'buffer' },
+    },
+    mapping = cmp.mapping.preset.insert({
+        ['<CR>'] = cmp.mapping.confirm({ select = false }), -- Enter key confirms completion item
+        ['<C-Space>'] = cmp.mapping.complete(),             -- Ctrl + space triggers completion menu
+    }),
+    snippet = {
+        expand = function(args)
+            require('luasnip').lsp_expand(args.body)
+        end,
+    },
+})
+
+require 'lspconfig'.lua_ls.setup { settings = { Lua = { diagnostics = { globals = { 'vim' } } } } }
