@@ -44,6 +44,7 @@ tcpdump
 texinfo
 ttf-fira-mono
 unzip
+xclip
 xf86-video-intel
 xorg-bdftopcf
 xorg-iceauth
