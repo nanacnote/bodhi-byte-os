@@ -163,6 +163,7 @@ vim.opt.wildignore = '*.o,*~,*.pyc,*/.git/*,*/.hg/*,*/.svn/*,*/.DS_Store'
 vim.g.loaded_netrw = 1
 vim.g.loaded_netrwPlugin = 1
 
+
 ---------------------------------------------------------------
 --- => Plugins
 ---------------------------------------------------------------
@@ -430,6 +431,20 @@ cmp.setup({
     mapping = cmp.mapping.preset.insert({
         ['<CR>'] = cmp.mapping.confirm({ select = false }), -- Enter key confirms completion item
         ['<C-Space>'] = cmp.mapping.complete(),             -- Ctrl + space triggers completion menu
+        ['<Tab>'] = cmp.mapping(function(fallback)
+             if cmp.visible() then
+                cmp.select_next_item()
+            else
+                fallback()
+            end
+        end),
+        ['<ESC>'] =  cmp.mapping(function(fallback)
+             if cmp.visible() then
+                cmp.close()
+            else
+                fallback()
+            end
+        end),
     }),
     snippet = {
         expand = function(args)
