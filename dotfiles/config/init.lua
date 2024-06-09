@@ -408,6 +408,7 @@ require('mason-lspconfig').setup({
         'yamlls',
         'bashls',
         'dockerls',
+        'clojure_lsp',
         -- 'gopls',
         -- 'rust_analyzer',
         -- 'solargraph',
