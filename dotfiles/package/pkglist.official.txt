@@ -34,10 +34,12 @@ man-db
 man-pages
 neofetch
 neovim
+noto-fonts-emoji
 openssh
 otf-firamono-nerd
 pacman-contrib
 picom
+qjackctl
 ripgrep
 sbc
 tcpdump
