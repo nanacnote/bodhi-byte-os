@@ -289,6 +289,9 @@ keymap('t', '<ESC><ESC>', [[<C-\><C-n>]], opts)
 -- keymap('t', '<C-l>', [[<C-\><C-n><C-w>l]], opts)
 
 -- NORMAL MODE
+-- Disable highlight
+keymap("n", "<ESC><ESC>", ":nohlsearch<CR><ESC>", opts)
+
 -- Window split
 keymap('n', '<leader>sh', ':split<CR>', opts)
 keymap('n', '<leader>sv', ':vsplit<CR>', opts)
