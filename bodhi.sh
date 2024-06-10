@@ -15,9 +15,9 @@ save_pkglist() {
 
 apply_symlinks() {
     sudo ln -sfv ${BODHI_ROOT}/bodhi.sh /usr/local/bin/bodhi
+   
     sudo ln -sfv ${BODHI_ROOT}/utils/custom-dmenu-run.sh /usr/local/bin/custom-dmenu-run
     sudo ln -sfv ${BODHI_ROOT}/utils/groqai.sh /usr/local/bin/groqai
-
 
     ln -sfv ${BODHI_ROOT}/dotfiles/config/.zshenv ~/.zshenv
     ln -sfv ${BODHI_ROOT}/dotfiles/config/.zshrc ~/.zshrc
@@ -29,7 +29,6 @@ apply_symlinks() {
     ln -sfv ${BODHI_ROOT}/dotfiles/config/picom.conf ~/.config/picom/picom.conf
     ln -sfv ${BODHI_ROOT}/dotfiles/config/init.lua ~/.config/nvim/init.lua
     ln -sfv ${BODHI_ROOT}/dotfiles/config/dunstrc ~/.config/dunst/dunstrc
-
 
     sudo ln -sfv ${BODHI_ROOT}/dotfiles/config/custom-gruvbox.omp.json ~/.cache/oh-my-posh/themes/custom-gruvbox.omp.json
     sudo ln -sfv ${BODHI_ROOT}/dotfiles/script/on-login-script.sh /etc/profile.d/on-login-script.sh
