@@ -4,3 +4,9 @@ Picture a world where every line of code is a glimpse into the void, yet also a 
 
 — chatgpt
 
+---
+
+TODO:
+
+- Add qjackctl rc file
+- Move apple keyboard specific tweaks from Xmodmap and dwm/config.h
