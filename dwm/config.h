@@ -136,6 +136,10 @@ static const Key keys[] = {
 	TAGKEYS(                        XK_8,                      7)
 	TAGKEYS(                        XK_9,                      8)
 	{ MODKEY|ShiftMask,             XK_q,      quit,           {0} },
+
+    /*custom key mappings use the hex code displayed by xev command*/
+	{ 0,       0x1008ff2d,         spawn,       {.v =  slockcmd} },
+
 };
 
 /* button definitions */
