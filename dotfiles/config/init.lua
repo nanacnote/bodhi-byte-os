@@ -290,7 +290,7 @@ keymap('t', '<ESC><ESC>', [[<C-\><C-n>]], opts)
 
 -- NORMAL MODE
 -- Disable highlight
-keymap("n", "<ESC><ESC>", ":nohlsearch<CR><ESC>", opts)
+keymap("n", "<leader>nh", ":nohlsearch<CR><ESC>", opts)
 
 -- Window split
 keymap('n', '<leader>sh', ':split<CR>', opts)
