@@ -1,7 +1,8 @@
 zstyle :compinstall filename '/home/nana/.zshrc'
+zstyle ':completion:*' menu select
 
-autoload -Uz compinit
-compinit
+autoload -Uz compinit && compinit
+autoload -Uz colors && colors
 
 
 
