@@ -5,6 +5,7 @@ bat
 bluez
 bluez-libs
 bluez-utils
+cdrtools
 docker
 dunst
 e2fsprogs
@@ -41,6 +42,7 @@ pacman-contrib
 paru
 paru-debug
 picom
+qemu-full
 qjackctl
 ripgrep
 sbc

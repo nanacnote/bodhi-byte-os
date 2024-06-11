@@ -5,6 +5,7 @@ bat
 bluez
 bluez-libs
 bluez-utils
+cdrtools
 docker
 dunst
 e2fsprogs
@@ -39,6 +40,7 @@ openssh
 otf-firamono-nerd
 pacman-contrib
 picom
+qemu-full
 qjackctl
 ripgrep
 sbc
