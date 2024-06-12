@@ -420,6 +420,8 @@ start_vm()
                     -netdev "type=user,id=unet${VID},${HOST_FWD}" \
                     -device "virtio-net-pci,netdev=unet${VID}" \
                     -virtfs "local,path=${VOLUME_DIR},mount_tag=volume,security_model=none,id=vol${VID}" \
+                    -vga virtio \
+                    -daemonize \
                     -enable-kvm
 				;;
 			"ssh")
