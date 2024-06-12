@@ -57,12 +57,18 @@ install_slock() {
     sudo make clean install
 }
 
-
 install_dwmblocks() {
     cd ${BODHI_ROOT}/dwmblocks || exit
     sudo make clean install
 }
 
+install_svkbd() {
+    cd ${BODHI_ROOT}/svkbd || exit
+    sudo make
+    sudomake clean install
+    # use sudo make uninstall to remove
+    # use cmd -> svkbd-mobile-intl
+}
 
 install_bluez_alsa() {
     cd bluez-alsa
@@ -91,6 +97,7 @@ show_help() {
       install-dmenu       Install/rebuild dmenu.
       install-slock       Install/rebuild slock.
       install-dwmblocks   Install/rebuild dwmblocks.
+      install-svkbd       Install on screen keyboard.
       install-bleuz-alsa  Install bluez-alsa daemon and utils.
       help                Show this help message.
 EOF
@@ -117,6 +124,9 @@ case "$1" in
         ;;
     install-dwmblocks)
         install_dwmblocks
+        ;;
+    install-svkbd)
+        install_svkbd
         ;;
     install-bluez-alsa)
         install_bluez_alsa
