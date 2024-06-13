@@ -38,6 +38,7 @@ neovim
 noto-fonts-emoji
 openssh
 otf-firamono-nerd
+p7zip
 pacman-contrib
 paru
 paru-debug
