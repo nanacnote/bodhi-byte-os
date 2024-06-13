@@ -20,7 +20,7 @@ EOF
 
 cpu() {
     cpu="$(ps -eo %cpu | awk '{sum +=$1} END {print sum}')"
-    echo " $cpu%"
+    echo " $cpu%"
 }
 
 mem(){
