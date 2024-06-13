@@ -22,7 +22,6 @@ MEM_SIZE=2G
 LARGE_INT=999
 GUEST_SSH_PORT=9001
 
-BRIDGE_NAME=virbr0
 
 
 print_help()
@@ -39,45 +38,56 @@ Commands:
         Install an OS on an x86 virtual machine
 
         Options:
-            --iso	absolute path to the OS image to use
-                    Required:	False
+        --iso	absolute path to the OS image to use
+                Required:	False
 
-            --pre	use a pre-configured OS image 
-                    Required:	False (if --pre flag and --iso flag are both set, --iso flag takes precedence)
-                    Options:	$(printf '<%s>\n' "${CLOUD_DISTROS[*]}")
+        --pre	use a pre-configured OS image
+                Required:	False (if --pre flag and --iso flag are both set, --iso flag takes precedence)
+                Options:	$(printf '<%s>\n' "${CLOUD_DISTROS[*]}")
 
     start
         Start an already installed virtual machine
 
         Options:
-            --img	name of the virtual machines qcow2 hdd image
-                    Required:	False
+        --img	name of the virtual machines qcow2 hdd image
+                Required:	False
 
-            --vid	number from 1 to 9 used to differential VM mac addr and device ids
-                    Required:	False
-                    Default:    1
+        --vid	number from 1 to 9 used to differential VM mac addr and device ids
+                Required:	False
+                Default:    1
 
-            --port	port(s) for mapping between host and guest (host-port:guest-port)
-                    Required:	False
-                    Example:	9000:8080,9001:443
+        --port	port(s) for mapping between host and guest (host-port:guest-port)
+                Required:	False
+                Example:	9000:8080,9001:443
 
-            --if	the mode of interfacing with the virtual machine
-                    Required:	False
-                    Options:	<ssh graphical>
-                    Default:	ssh
-                    Notes:		A port for SSH can be specified (--if ssh,9000)
+        --if	the mode of interfacing with the virtual machine
+                Required:	False
+                Options:	<ssh graphical>
+                Default:	ssh
+                Notes:		A port for SSH can be specified (--if ssh,9000)
 
     status
         Lookup what virtual machines are up and running
 
     stop
         Sends a shutdown command to a running virtual machine
-    
+
     create-bridge
         Create a bridge network called ${BRIDGE_NAME}
 
     remove-bridge
         Remove the ${BRIDGE_NAME} network
+
+    mount-qcow
+        Mount a qcow image
+
+        Options:
+        --qcow-path  qcow image file path
+                Required:   True
+
+    umount-qcow
+        Unmount a qcow image
+
 EOF
 }
 
@@ -135,7 +145,7 @@ chpasswd:
     root:${VM_PASSWORD}
     ${VM_USERNAME}:${VM_PASSWORD}
   expire: false
-  
+
 write_files:
   - content: |-
       [Unit]
@@ -182,7 +192,7 @@ write_files:
       systemctl enable ${VM_HOSTNAME}.service;
     path: /tmp/${VM_HOSTNAME}/init.sh
     permissions: '0755'
-    
+
 runcmd:
   - /tmp/${VM_HOSTNAME}/init.sh
   - rm /tmp/${VM_HOSTNAME}/init.sh
@@ -204,7 +214,7 @@ check_cloud_distro()
 		break
 	fi
 	done
-	
+
 	if [ "$ret" -eq 0 ]; then
 		printf "Error: $value is not supported for cloud distro install\n"
 		printf "\n"
@@ -347,7 +357,7 @@ install_vm()
 			printf "$counter: $distro\n"
 			counter=$((counter + 1))
 		done
-        
+
         # TODO:
         # insert another print and list of other none cloud init distros here
 
@@ -364,7 +374,7 @@ install_vm()
 		else
 			printf "Error: No matching distro was found for the choice\n"
 			exit 1
-		fi      
+		fi
 	fi
 
 }
@@ -480,7 +490,7 @@ create_bridge()
     ip link add name ${BRIDGE_NAME} type bridge
     ip link set dev ${BRIDGE_NAME} up
     bridge link
-   
+
     cat <<-EOF
     # --- to add an interface to the bridge ---
     # ip link set eth0 up
@@ -497,6 +507,28 @@ remove_bridge()
     bridge link
 }
 
+mount_qcow()
+{
+    check_flag "--qcow-path" "$QCOW_PATH"
+
+    local abs_path=$(realpath "$QCOW_PATH")
+    sudo modprobe nbd max_part=8
+    sudo qemu-nbd --connect=/dev/nbd0 ${abs_path}
+    sudo fdisk /dev/nbd0 -l
+
+
+    trap 'sudo qemu-nbd --disconnect /dev/nbd0' EXIT TERM
+	read -p "Enter the device to mount: " selection
+    sudo mount /dev/${selection} /mnt
+    ls -la /mnt
+}
+
+umount_qcow()
+{
+    sudo umount /mnt
+    sudo qemu-nbd --disconnect /dev/nbd0
+}
+
 parse_port_flag()
 {
 	HOST_FWD=""
@@ -508,7 +540,7 @@ parse_port_flag()
 		if [ -z "$host" ] || [ -z "$guest" ]; then
 			printf "Error:\tBoth host and guest ports must be set\n"
 			printf "\tUse the format '--port <host:guest>,<host:guest>'\n"
-			printf "\tUse a comma delimeter for multiple port forwarding\n" 
+			printf "\tUse a comma delimeter for multiple port forwarding\n"
 			exit 1
 		fi
 		HOST_FWD="${HOST_FWD},hostfwd=tcp::${host}-:${guest}"
@@ -555,6 +587,7 @@ set_defaul_flags()
     # set default flags as stated in print_help here
     VID=1
     IF=ssh
+    BRIDGE_NAME=virbr0
 }
 
 parse_options()
@@ -565,7 +598,7 @@ parse_options()
 	else
 		print_help && exit 1
 	fi
-	
+
 	while [ "$#" -gt 0 ]; do
 		case "$1" in
 			"--img")
@@ -610,6 +643,13 @@ parse_options()
 					shift
 				fi
 				;;
+			"--qcow-path")
+				shift
+				QCOW_PATH="$1"
+				if [ -n "$1" ]; then
+					shift
+				fi
+				;;
 			*)
 				printf "Error: Unknown option $1\n"
 				print_help && exit 1
@@ -638,6 +678,12 @@ parse_command()
 			;;
 		"remove-bridge")
 			remove_bridge
+			;;
+		"mount-qcow")
+			mount_qcow
+			;;
+		"umount-qcow")
+			umount_qcow
 			;;
 		*)
 			printf "Error: Unknown command $CMD\n"
