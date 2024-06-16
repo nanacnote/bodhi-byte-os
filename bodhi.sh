@@ -3,9 +3,6 @@
 SCRIPT_NAME=$(basename "$0")
 BODHI_ROOT=$(dirname "$(realpath "$0")")
 
-# TODO:
-# - command to list utils
-# - add auto complete
 
 show_help()
 {
@@ -40,6 +37,7 @@ apply_symlinks()
 
     sudo ln -sfv ${BODHI_ROOT}/utils/custom-dmenu-run.sh /usr/local/bin/custom-dmenu-run
     sudo ln -sfv ${BODHI_ROOT}/utils/groqai.sh /usr/local/bin/groqai
+    sudo ln -sfv ${BODHI_ROOT}/utils/qemu-vm-manager.sh /usr/local/bin/qvm
 
     ln -sfv ${BODHI_ROOT}/dotfiles/config/.zshenv ~/.zshenv
     ln -sfv ${BODHI_ROOT}/dotfiles/config/.zshrc ~/.zshrc

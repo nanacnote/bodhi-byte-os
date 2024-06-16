@@ -78,7 +78,7 @@ export NVM_DIR="${HOME}/.nvm"
 
 
 
-# --- pyenv --- 
+# --- pyenv ---
 export PYENV_ROOT="$HOME/.pyenv"
 [[ -d $PYENV_ROOT/bin ]] && export PATH="$PYENV_ROOT/bin:$PATH"
 eval "$(pyenv init -)"
@@ -89,3 +89,7 @@ eval "$(pyenv init -)"
 export SDKMAN_DIR="$HOME/.sdkman"
 [[ -s "${SDKMAN_DIR}/bin/sdkman-init.sh" ]] && source "${SDKMAN_DIR}/bin/sdkman-init.sh"
 
+
+
+# --- source completion script ---
+source ~/.config/bodhi-byte-os/utils/completions.zsh
