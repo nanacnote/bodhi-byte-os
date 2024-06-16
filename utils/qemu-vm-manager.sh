@@ -6,7 +6,10 @@ UBUNTU_CLOUD_DISTRO_URL="https://cloud-images.ubuntu.com/jammy/current/jammy-ser
 CLOUD_DISTROS=("ubuntu-cloud")
 
 SCRIPT_NAME=$(basename "$0")
-SCRIPT_ROOT=$(dirname "$(realpath "$0")")
+
+# set the full path of where to save accompanying files
+# SCRIPT_ROOT=$(dirname "$(realpath "$0")")
+SCRIPT_ROOT="${HOME}/VMs"
 
 VMS_DIR="${SCRIPT_ROOT}/vms"
 VOLUME_DIR="${SCRIPT_ROOT}/volume"
@@ -36,58 +39,43 @@ Usage:
 Commands:
     install
         Install an OS on an x86 virtual machine
-
         Options:
         --iso	absolute path to the OS image to use
                 Required:	False
-
         --pre	use a pre-configured OS image
                 Required:	False (if --pre flag and --iso flag are both set, --iso flag takes precedence)
                 Options:	$(printf '<%s>\n' "${CLOUD_DISTROS[*]}")
-
     start
         Start an already installed virtual machine
-
         Options:
         --img	name of the virtual machines qcow2 hdd image
                 Required:	False
-
         --vid	number from 1 to 9 used to differential VM mac addr and device ids
                 Required:	False
                 Default:    1
-
         --port	port(s) for mapping between host and guest (host-port:guest-port)
                 Required:	False
                 Example:	9000:8080,9001:443
-
         --if	the mode of interfacing with the virtual machine
                 Required:	False
                 Options:	<ssh graphical>
                 Default:	ssh
                 Notes:		A port for SSH can be specified (--if ssh,9000)
-
     status
         Lookup what virtual machines are up and running
-
     stop
         Sends a shutdown command to a running virtual machine
-
     create-bridge
         Create a bridge network called ${BRIDGE_NAME}
-
     remove-bridge
         Remove the ${BRIDGE_NAME} network
-
     mount-qcow
         Mount a qcow image
-
         Options:
         --qcow-path  qcow image file path
                 Required:   True
-
     umount-qcow
         Unmount a qcow image
-
 EOF
 }
 
