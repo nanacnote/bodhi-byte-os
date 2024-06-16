@@ -7,15 +7,37 @@ BODHI_ROOT=$(dirname "$(realpath "$0")")
 # - command to list utils
 # - add auto complete
 
-save_pkglist() {
+show_help()
+{
+    cat <<-EOF
+    Usage: $SCRIPT_NAME <command> [options]
+
+    Commands:
+      save-pkglist        Save currently installed packages to txt file.
+      apply-symlinks      Apply symlinks for configs and scripts.
+      install-dwm         Install/rebuild dwm.
+      install-st          Install/rebuild st.
+      install-dmenu       Install/rebuild dmenu.
+      install-slock       Install/rebuild slock.
+      install-dwmblocks   Install/rebuild dwmblocks.
+      install-svkbd       Install on screen keyboard.
+      install-bleuz-alsa  Install bluez-alsa daemon and utils.
+      help                Show this help message.
+EOF
+}
+
+
+save_pkglist()
+{
     paru -Qqe > ${BODHI_ROOT}/dotfiles/package/pkglist.txt
     paru -Qqen > ${BODHI_ROOT}/dotfiles/package/pkglist.official.txt
     paru -Qqem > ${BODHI_ROOT}/dotfiles/package/pkglist.foreign.txt
 }
 
-apply_symlinks() {
+apply_symlinks()
+{
     sudo ln -sfv ${BODHI_ROOT}/bodhi.sh /usr/local/bin/bodhi
-   
+
     sudo ln -sfv ${BODHI_ROOT}/utils/custom-dmenu-run.sh /usr/local/bin/custom-dmenu-run
     sudo ln -sfv ${BODHI_ROOT}/utils/groqai.sh /usr/local/bin/groqai
 
@@ -34,35 +56,41 @@ apply_symlinks() {
     sudo ln -sfv ${BODHI_ROOT}/dotfiles/script/on-login-script.sh /etc/profile.d/on-login-script.sh
 }
 
-install_dwm() {
+install_dwm()
+{
     cd ${BODHI_ROOT}/dwm || exit
     sudo make clean install
 }
 
 
-install_st() {
+install_st()
+{
     cd ${BODHI_ROOT}/st || exit
     sudo make clean install
 }
 
 
-install_dmenu() {
+install_dmenu()
+{
     cd ${BODHI_ROOT}/dmenu || exit
     sudo make clean install
 }
 
 
-install_slock() {
+install_slock()
+{
     cd ${BODHI_ROOT}/slock || exit
     sudo make clean install
 }
 
-install_dwmblocks() {
+install_dwmblocks()
+{
     cd ${BODHI_ROOT}/dwmblocks || exit
     sudo make clean install
 }
 
-install_svkbd() {
+install_svkbd()
+{
     cd ${BODHI_ROOT}/svkbd || exit
     sudo make
     sudomake clean install
@@ -70,7 +98,8 @@ install_svkbd() {
     # use cmd -> svkbd-mobile-intl
 }
 
-install_bluez_alsa() {
+install_bluez_alsa()
+{
     cd bluez-alsa
         autoreconf --install --force
         mkdir -p build
@@ -84,24 +113,6 @@ install_bluez_alsa() {
     # use sudo make uninstall to remove
 }
 
-
-show_help() {
-    cat <<-EOF
-    Usage: $SCRIPT_NAME <command> [options]
-
-    Commands:
-      save-pkglist        Save currently installed packages to txt file.
-      apply-symlinks      Apply symlinks for configs and scripts.
-      install-dwm         Install/rebuild dwm.
-      install-st          Install/rebuild st.
-      install-dmenu       Install/rebuild dmenu.
-      install-slock       Install/rebuild slock.
-      install-dwmblocks   Install/rebuild dwmblocks.
-      install-svkbd       Install on screen keyboard.
-      install-bleuz-alsa  Install bluez-alsa daemon and utils.
-      help                Show this help message.
-EOF
-}
 
 case "$1" in
     save-pkglist)
@@ -135,3 +146,4 @@ case "$1" in
         show_help
         ;;
 esac
+
