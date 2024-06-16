@@ -58,40 +58,40 @@ apply_symlinks()
 
 install_dwm()
 {
-    cd ${BODHI_ROOT}/dwm || exit
+    cd ${BODHI_ROOT}/vendors/dwm || exit
     sudo make clean install
 }
 
 
 install_st()
 {
-    cd ${BODHI_ROOT}/st || exit
+    cd ${BODHI_ROOT}/vendors/st || exit
     sudo make clean install
 }
 
 
 install_dmenu()
 {
-    cd ${BODHI_ROOT}/dmenu || exit
+    cd ${BODHI_ROOT}/vendors/dmenu || exit
     sudo make clean install
 }
 
 
 install_slock()
 {
-    cd ${BODHI_ROOT}/slock || exit
+    cd ${BODHI_ROOT}/vendors/slock || exit
     sudo make clean install
 }
 
 install_dwmblocks()
 {
-    cd ${BODHI_ROOT}/dwmblocks || exit
+    cd ${BODHI_ROOT}/vendors/dwmblocks || exit
     sudo make clean install
 }
 
 install_svkbd()
 {
-    cd ${BODHI_ROOT}/svkbd || exit
+    cd ${BODHI_ROOT}/vendors/svkbd || exit
     sudo make
     sudomake clean install
     # use sudo make uninstall to remove
@@ -100,7 +100,7 @@ install_svkbd()
 
 install_bluez_alsa()
 {
-    cd bluez-alsa
+    cd /vendors/bluez-alsa
         autoreconf --install --force
         mkdir -p build
         cd build
