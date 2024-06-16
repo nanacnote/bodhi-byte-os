@@ -699,3 +699,8 @@ parse_command
 
 # exit fullscreen -> ctrl + alt + f
 # release mouse   -> ctrl + alt + g
+#
+# /etc/resolv.conf
+# nameserver 8.8.8.8
+# nameserver 8.8.4.4
+
