@@ -1,7 +1,9 @@
 #!/bin/sh
 
 handler() {
-    case "$1" in
+    local full_cmd="$@"
+    local trimmed_cmd=${full_cmd:2}     # strip icons and space 
+    case "$trimmed_cmd" in
         "Logout")
             slock
             ;;
@@ -26,11 +28,11 @@ handler() {
 
 # --- add commands here ---
 handler $(cat <<-EOF | sort | dmenu -i
-Logout
-Reboot
-Shutdown
-Firefox
-QjackCtl
+󰿅  Logout
+󰑓  Reboot
+󰤆  Shutdown
+󰈹  Firefox
+󱡫  QjackCtl
 EOF
 )
 
