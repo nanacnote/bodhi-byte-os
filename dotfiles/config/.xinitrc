@@ -36,14 +36,9 @@ fi
 #####################
 #       CUSTOM      #
 #####################
+feh --no-fehbg --bg-fill "${HOME}/Documents/images/wallpaper/current"
 
-# Set the background image
-feh \
-    --no-fehbg \
-    --bg-fill "${HOME}/Documents/images/wallpaper/current"
-
-
+xautolock -time 3 -locker "slock" -detectsleep &
 ${HOME}/.config/bodhi-byte-os/dotfiles/script/dwm-status-bar.sh start &
-
 picom &
 exec dwm

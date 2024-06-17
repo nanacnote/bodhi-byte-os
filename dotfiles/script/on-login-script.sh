@@ -9,4 +9,3 @@ export PIPENV_VENV_IN_PROJECT=1               # forces pipenv to use "the-projec
 # start dwm
 startx
 
-

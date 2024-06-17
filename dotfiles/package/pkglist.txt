@@ -51,6 +51,7 @@ tcpdump
 texinfo
 ttf-fira-mono
 unzip
+xautolock
 xclip
 xf86-video-intel
 xorg-bdftopcf
