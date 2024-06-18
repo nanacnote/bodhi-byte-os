@@ -2,7 +2,7 @@
 
 handler() {
     local full_cmd="$@"
-    local trimmed_cmd=${full_cmd:2}     # strip icons and space 
+    local trimmed_cmd=${full_cmd:2}     # strip icons and space
     case "$trimmed_cmd" in
         "Logout")
             slock
@@ -12,6 +12,9 @@ handler() {
             ;;
         "Shutdown")
             sudo systemctl poweroff
+            ;;
+        "Terminal")
+            st
             ;;
         "Firefox")
             nohup firefox > /tmp/nohup.firefox.out 2>&1 & disown;exit
@@ -31,6 +34,7 @@ handler $(cat <<-EOF | sort | dmenu -i
 󰿅  Logout
 󰑓  Reboot
 󰤆  Shutdown
+  Terminal
 󰈹  Firefox
 󱡫  QjackCtl
 EOF
