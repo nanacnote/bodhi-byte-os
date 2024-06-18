@@ -1,4 +1,5 @@
 # aliases
+alias nv='nvim'
 alias rm='rm -i'
 alias ls='eza --color=auto'
 alias la='eza -la --color=auto'
