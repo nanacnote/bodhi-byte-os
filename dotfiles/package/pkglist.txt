@@ -47,6 +47,7 @@ qemu-full
 qjackctl
 ripgrep
 sbc
+slop
 tcpdump
 texinfo
 ttf-fira-mono
