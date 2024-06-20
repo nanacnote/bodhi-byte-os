@@ -24,6 +24,7 @@ iwd
 jack2
 jack2-dbus
 jq
+kdenlive
 lazygit
 lf
 libfdk-aac

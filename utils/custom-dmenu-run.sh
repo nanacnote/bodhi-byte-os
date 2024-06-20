@@ -22,6 +22,9 @@ handler() {
         "QjackCtl")
             nohup qjackctl > /tmp/nohup.qjackctl.out 2>&1 & disown;exit
             ;;
+        "Kdenlive")
+            nohup kdenlive > /tmp/nohup.kdenlive.out 2>&1 & disown;exit
+            ;;
         *)
             :
             ;;
@@ -37,6 +40,7 @@ handler $(cat <<-EOF | sort | dmenu -i
   Terminal
 󰈹  Firefox
 󱡫  QjackCtl
+󰿏  Kdenlive
 EOF
 )
 
