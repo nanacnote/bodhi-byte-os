@@ -145,11 +145,11 @@ static const Key keys[] = {
     /*lock-key*/
 	{ 0,       0x1008ff2d,         spawn,       {.v = (const char*[]){ "slock", NULL }} },
     /*volume-up-key*/
-	{ 0,       0x1008ff11,         spawn,       {.v =  (const char*[]){ "/bin/sh", "-c", "amixer set Master 5%- > /dev/null 2>&1 && dwm-status-bar refresh", NULL }} },
+	{ 0,       0x1008ff11,         spawn,       {.v =  (const char*[]){ "/bin/sh", "-c", "amixer set Master unmute > /dev/null 2>&1 && amixer set Master 5%- > /dev/null 2>&1 && dwm-status-bar refresh", NULL }} },
     /*volume-mute-key*/
 	{ 0,       0x1008ff12,         spawn,       {.v =  (const char*[]){ "/bin/sh", "-c", "amixer set Master toggle > /dev/null 2>&1 && dwm-status-bar refresh", NULL }} },
     /*volume-down-key*/
-	{ 0,       0x1008ff13,         spawn,       {.v =  (const char*[]){ "/bin/sh", "-c", "amixer set Master 5%+ > /dev/null 2>&1 && dwm-status-bar refresh", NULL }} },
+	{ 0,       0x1008ff13,         spawn,       {.v =  (const char*[]){ "/bin/sh", "-c", "amixer set Master unmute > /dev/null 2>&1 && amixer set Master 5%+ > /dev/null 2>&1 && dwm-status-bar refresh", NULL }} },
 
 };
 
