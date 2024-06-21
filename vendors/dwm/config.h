@@ -78,11 +78,11 @@ static const Layout layouts[] = {
 /* helper for spawning shell commands in the pre dwm-5.0 fashion */
 #define SHCMD(cmd) { .v = (const char*[]){ "/bin/sh", "-c", cmd, NULL } }
 
-/* commands */
 static char dmenumon[2] = "0"; /* component of dmenucmd, manipulated in spawn() */
-static const char *dmenucmd[] = { "custom-dmenu-run", NULL };
-static const char *termcmd[]  = { "st", NULL };
-static const char *slockcmd[]  = { "slock", NULL };
+
+/* commands */
+static const char *dmenucmd[]       = { "custom-dmenu-run", NULL };
+static const char *termcmd[]        = { "st", NULL };
 
 static const Key keys[] = {
 	/* modifier                     key        function        argument */
@@ -142,7 +142,14 @@ static const Key keys[] = {
 	{ MODKEY|ShiftMask,             XK_q,      quit,           {0} },
 
     /*custom key mappings use the hex code displayed by xev command*/
-	{ 0,       0x1008ff2d,         spawn,       {.v =  slockcmd} },
+    /*lock-key*/
+	{ 0,       0x1008ff2d,         spawn,       {.v = (const char*[]){ "slock", NULL }} },
+    /*volume-up-key*/
+	{ 0,       0x1008ff11,         spawn,       {.v =  (const char*[]){ "/bin/sh", "-c", "amixer set Master 5%- > /dev/null 2>&1 && dwm-status-bar refresh", NULL }} },
+    /*volume-mute-key*/
+	{ 0,       0x1008ff12,         spawn,       {.v =  (const char*[]){ "/bin/sh", "-c", "amixer set Master toggle > /dev/null 2>&1 && dwm-status-bar refresh", NULL }} },
+    /*volume-down-key*/
+	{ 0,       0x1008ff13,         spawn,       {.v =  (const char*[]){ "/bin/sh", "-c", "amixer set Master 5%+ > /dev/null 2>&1 && dwm-status-bar refresh", NULL }} },
 
 };
 

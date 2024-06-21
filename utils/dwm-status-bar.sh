@@ -56,8 +56,23 @@ pkgs(){
 }
 
 vol(){
-    vol="$(amixer get Master | grep -oE '[0-9]+%')"
-    echo " $vol"
+    vol="$(amixer get Master | grep -oE '[0-9]+%' | head -1)"
+    mute_status="$(amixer get Master | grep '\[off\]')"
+
+    if [ -n "$mute_status" ]; then
+        icon=""
+    else
+        volume="${vol%\%}"  # Remove the '%' sign for comparison
+        if [ "$volume" -eq 0 ]; then
+            icon=""
+        elif [ "$volume" -le 75 ]; then
+            icon=""
+        else
+            icon=""
+        fi
+    fi
+
+    echo "$icon $vol"
 }
 
 dte(){

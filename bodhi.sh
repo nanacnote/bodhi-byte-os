@@ -35,6 +35,7 @@ apply_symlinks()
 {
     sudo ln -sfv ${BODHI_ROOT}/bodhi.sh /usr/local/bin/bodhi
 
+    sudo ln -sfv ${BODHI_ROOT}/utils/dwm-status-bar.sh /usr/local/bin/dwm-status-bar
     sudo ln -sfv ${BODHI_ROOT}/utils/custom-dmenu-run.sh /usr/local/bin/custom-dmenu-run
     sudo ln -sfv ${BODHI_ROOT}/utils/groqai.sh /usr/local/bin/groqai
     sudo ln -sfv ${BODHI_ROOT}/utils/qemu-vm-manager.sh /usr/local/bin/qvm

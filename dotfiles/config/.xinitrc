@@ -39,6 +39,6 @@ fi
 feh --no-fehbg --bg-fill "${HOME}/Documents/images/wallpaper/current"
 
 xautolock -time 3 -locker "slock" -detectsleep &
-${HOME}/.config/bodhi-byte-os/dotfiles/script/dwm-status-bar.sh start &
+dwm-status-bar start &
 picom &
 exec dwm

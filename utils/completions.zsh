@@ -29,6 +29,30 @@ _bodhi_completion()
     esac
 }
 
+_dwm_status_bar()
+{
+    local curcontext="$curcontext" state line
+    typeset -A opt_args
+
+    _arguments '1: :->command' '*: :->args'
+
+    case $state in
+        command)
+            _values "commands" \
+                status \
+                start \
+                refresh
+            ;;
+        args)
+            case $words[2] in
+                *)
+                    _values "options" ""
+                    ;;
+            esac
+            ;;
+    esac
+}
+
 
 _qemu_vm_manager_completion()
 {
@@ -67,5 +91,6 @@ _qemu_vm_manager_completion()
 
 
 compdef _qemu_vm_manager_completion qvm
+compdef _dwm_status_bar dwm-status-bar
 compdef _bodhi_completion bodhi
 
