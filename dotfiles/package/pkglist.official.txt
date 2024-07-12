@@ -42,6 +42,7 @@ otf-firamono-nerd
 p7zip
 pacman-contrib
 picom
+python-docutils
 qemu-full
 qjackctl
 ripgrep
