@@ -17,4 +17,4 @@ RESPONSE=$(curl -s -X POST \
 JSON_RESPONSE=$(echo "$RESPONSE" | jq -r '.')
 CHOICES=$(echo "$JSON_RESPONSE" | jq -r '.choices[0].message.content')
 
-printf "$CHOICES\n" | bat -l md
+echo "$CHOICES" | bat -l md
