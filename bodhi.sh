@@ -19,6 +19,7 @@ show_help()
       install-dwmblocks   Install/rebuild dwmblocks.
       install-svkbd       Install on screen keyboard.
       install-bleuz-alsa  Install bluez-alsa daemon and utils.
+      install-whisper     Install openai whisper.
       help                Show this help message.
 EOF
 }
@@ -99,7 +100,7 @@ install_svkbd()
 
 install_bluez_alsa()
 {
-    cd /vendors/bluez-alsa
+    cd ${BODHI_ROOT}/vendors/bluez-alsa
         autoreconf --install --force
         mkdir -p build
         cd build
@@ -110,6 +111,13 @@ install_bluez_alsa()
     sudo systemctl enable bluealsa.service
     sudo systemctl enable bluealsa-aplay.service
     # use sudo make uninstall to remove
+}
+
+install_whisper()
+{
+    cd ${BODHI_ROOT}/vendors/whisper
+        pip install --user .
+    cd ${BODHI_ROOT}
 }
 
 
@@ -140,6 +148,9 @@ case "$1" in
         ;;
     install-bluez-alsa)
         install_bluez_alsa
+        ;;
+    install-whisper)
+        install_whisper
         ;;
     help | *)
         show_help

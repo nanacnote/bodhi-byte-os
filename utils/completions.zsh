@@ -17,7 +17,8 @@ _bodhi_completion()
                 install-slock \
                 install-dwmblocks \
                 install-svkbd \
-                install-bleuz-alsa
+                install-bleuz-alsa \
+                install-whisper
             ;;
         args)
             case $words[2] in
