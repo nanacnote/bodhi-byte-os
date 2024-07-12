@@ -17,7 +17,7 @@ _bodhi_completion()
                 install-slock \
                 install-dwmblocks \
                 install-svkbd \
-                install-bleuz-alsa \
+                install-bluez-alsa \
                 install-whisper
             ;;
         args)
