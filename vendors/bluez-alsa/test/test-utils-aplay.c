@@ -122,7 +122,7 @@ CK_START_TEST(test_list_devices) {
 	ck_assert_int_gt(spawn_read(&sp_ba_aplay, output, sizeof(output), NULL, 0), 0);
 
 	ck_assert_ptr_ne(strstr(output,
-				"hci0: 23:45:67:89:AB:CD [Speaker], trusted audio-card"), NULL);
+				"hci11: 23:45:67:89:AB:CD [Speaker], trusted audio-card"), NULL);
 
 	spawn_close(&sp_ba_aplay, NULL);
 	spawn_terminate(&sp_ba_mock, 0);
@@ -307,8 +307,8 @@ CK_START_TEST(test_play_dbus_signals) {
 
 } CK_END_TEST
 
-int main(int argc, char *argv[], char *envp[]) {
-	preload(argc, argv, envp, ".libs/aloader.so");
+int main(int argc, char *argv[]) {
+	preload(argc, argv, ".libs/libaloader.so");
 
 	char *argv_0 = strdup(argv[0]);
 	char *argv_0_dir = dirname(argv_0);

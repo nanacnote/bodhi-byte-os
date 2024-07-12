@@ -42,7 +42,8 @@
 #include "shared/defs.h"
 #include "shared/log.h"
 
-#define TEST_BLUEALSA_STORAGE_DIR "/tmp/bluealsa-mock-storage"
+/* Keep persistent storage in the current directory. */
+#define TEST_BLUEALSA_STORAGE_DIR "storage-mock"
 
 GAsyncQueue *mock_sem_ready = NULL;
 GAsyncQueue *mock_sem_timeout = NULL;
@@ -185,10 +186,10 @@ int main(int argc, char *argv[]) {
 			uint32_t codec_id = a2dp_codecs_codec_id_from_string(optarg);
 			bool matched = false;
 
-			struct a2dp_codec * const * cc = a2dp_codecs;
-			for (struct a2dp_codec *c = *cc; c != NULL; c = *++cc)
-				if (c->codec_id == codec_id) {
-					c->enabled = true;
+			struct a2dp_sep * const * seps = a2dp_seps;
+			for (struct a2dp_sep *sep = *seps; sep != NULL; sep = *++seps)
+				if (sep->codec_id == codec_id) {
+					sep->enabled = true;
 					matched = true;
 				}
 
@@ -244,13 +245,15 @@ int main(int argc, char *argv[]) {
 	/* Set up main loop with graceful termination handlers. */
 	g_autoptr(GMainLoop) loop = g_main_loop_new(NULL, FALSE);
 	GThread *loop_th = g_thread_new(NULL, mock_main_loop_run, loop);
-	g_timeout_add(timeout_ms, mock_sem_signal_handler, mock_sem_timeout);
 	g_unix_signal_add(SIGINT, mock_sem_signal_handler, mock_sem_timeout);
 	g_unix_signal_add(SIGTERM, mock_sem_signal_handler, mock_sem_timeout);
 
 	mock_bluez_service_start();
 	mock_upower_service_start();
 	mock_bluealsa_service_start();
+
+	/* Start the termination timer after all services are up and running. */
+	g_timeout_add(timeout_ms, mock_sem_signal_handler, mock_sem_timeout);
 
 	/* Run mock until timeout or SIGINT/SIGTERM signal. */
 	mock_bluealsa_run();

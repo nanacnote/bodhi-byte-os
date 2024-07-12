@@ -60,10 +60,8 @@
 
 #include "inc/sine.inc"
 
-#define TEST_BLUEALSA_STORAGE_DIR "/tmp/bluealsa-mock-storage"
-
 static const a2dp_sbc_t config_sbc_44100_stereo = {
-	.frequency = SBC_SAMPLING_FREQ_44100,
+	.sampling_freq = SBC_SAMPLING_FREQ_44100,
 	.channel_mode = SBC_CHANNEL_MODE_JOINT_STEREO,
 	.block_length = SBC_BLOCK_LENGTH_16,
 	.subbands = SBC_SUBBANDS_8,
@@ -76,7 +74,7 @@ static const a2dp_sbc_t config_sbc_44100_stereo = {
 static const a2dp_aptx_t config_aptx_44100_stereo = {
 	.info = A2DP_VENDOR_INFO_INIT(APTX_VENDOR_ID, APTX_CODEC_ID),
 	.channel_mode = APTX_CHANNEL_MODE_STEREO,
-	.frequency = APTX_SAMPLING_FREQ_44100,
+	.sampling_freq = APTX_SAMPLING_FREQ_44100,
 };
 #endif
 
@@ -84,7 +82,7 @@ static const a2dp_aptx_t config_aptx_44100_stereo = {
 static const a2dp_aptx_hd_t config_aptx_hd_48000_stereo = {
 	.aptx.info = A2DP_VENDOR_INFO_INIT(APTX_HD_VENDOR_ID, APTX_HD_CODEC_ID),
 	.aptx.channel_mode = APTX_CHANNEL_MODE_STEREO,
-	.aptx.frequency = APTX_SAMPLING_FREQ_48000,
+	.aptx.sampling_freq = APTX_SAMPLING_FREQ_48000,
 };
 #endif
 
@@ -92,8 +90,8 @@ static const a2dp_aptx_hd_t config_aptx_hd_48000_stereo = {
 static const a2dp_faststream_t config_faststream_44100_16000 = {
 	.info = A2DP_VENDOR_INFO_INIT(FASTSTREAM_VENDOR_ID, FASTSTREAM_CODEC_ID),
 	.direction = FASTSTREAM_DIRECTION_MUSIC | FASTSTREAM_DIRECTION_VOICE,
-	.frequency_music = FASTSTREAM_SAMPLING_FREQ_MUSIC_44100,
-	.frequency_voice = FASTSTREAM_SAMPLING_FREQ_VOICE_16000,
+	.sampling_freq_music = FASTSTREAM_SAMPLING_FREQ_MUSIC_44100,
+	.sampling_freq_voice = FASTSTREAM_SAMPLING_FREQ_VOICE_16000,
 };
 #endif
 
@@ -198,7 +196,7 @@ static struct ba_device *mock_device_new(struct ba_adapter *a, const char *addre
 }
 
 static struct ba_transport *mock_transport_new_a2dp(struct ba_device *d,
-		const char *uuid, const struct a2dp_codec *codec, const void *configuration) {
+		const char *uuid, const struct a2dp_sep *sep, const void *configuration) {
 
 	usleep(mock_fuzzing_ms * 1000);
 
@@ -208,20 +206,21 @@ static struct ba_transport *mock_transport_new_a2dp(struct ba_device *d,
 
 	g_autoptr(GAsyncQueue) sem = g_async_queue_new();
 	assert(mock_bluez_device_media_set_configuration(d->bluez_dbus_path, transport_path,
-				uuid, codec->codec_id, configuration, codec->capabilities_size, sem) == 0);
+				uuid, sep->codec_id, configuration, sep->capabilities_size, sem) == 0);
 	mock_sem_wait(sem);
 
 	char device[18];
 	ba2str(&d->addr, device);
 	fprintf(stderr, "BLUEALSA_READY=A2DP:%s:%s\n", device,
-			a2dp_codecs_codec_id_to_string(codec->codec_id));
+			a2dp_codecs_codec_id_to_string(sep->codec_id));
 
 	struct ba_transport *t;
 	assert((t = ba_transport_lookup(d, transport_path)) != NULL);
 	return t;
 }
 
-static int mock_transport_acquire_bt_sco(struct ba_transport *t) {
+/* SCO acquisition override for testing purposes. */
+int transport_acquire_bt_sco(struct ba_transport *t) {
 
 	int bt_fds[2];
 	assert(socketpair(AF_UNIX, SOCK_SEQPACKET, 0, bt_fds) == 0);
@@ -265,8 +264,6 @@ static struct ba_transport *mock_transport_new_sco(struct ba_device *d,
 		t->sco.rfcomm->hf_codecs.lc3_swb = true;
 #endif
 	}
-
-	t->acquire = mock_transport_acquire_bt_sco;
 
 	char device[18];
 	ba2str(&d->addr, device);
@@ -429,8 +426,8 @@ static void mock_dbus_name_acquired(G_GNUC_UNUSED GDBusConnection *conn,
 	config.dbus = conn;
 	/* do not generate lots of data */
 	config.sbc_quality = SBC_QUALITY_LOW;
-	/* initialize codec capabilities */
-	a2dp_codecs_init();
+	/* initialize SEPs capabilities */
+	a2dp_seps_init();
 
 	/* create mock devices attached to the mock adapter */
 	ba_adapter = mock_adapter_new(MOCK_ADAPTER_ID);

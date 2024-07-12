@@ -36,6 +36,18 @@
 #include "shared/log.h"
 #include "shared/rt.h"
 
+static const struct a2dp_bit_mapping a2dp_opus_channels[] = {
+	{ OPUS_CHANNEL_MODE_MONO, 1 },
+	{ OPUS_CHANNEL_MODE_DUAL, 2 },
+	{ OPUS_CHANNEL_MODE_STEREO, 2 },
+	{ 0 }
+};
+
+static const struct a2dp_bit_mapping a2dp_opus_samplings[] = {
+	{ OPUS_SAMPLING_FREQ_48000, 48000 },
+	{ 0 }
+};
+
 static unsigned int a2dp_opus_get_frame_dms(const a2dp_opus_t *conf) {
 	switch (conf->frame_duration) {
 	default:
@@ -281,34 +293,24 @@ fail_init:
 	return NULL;
 }
 
-static const struct a2dp_channels a2dp_opus_channels[] = {
-	{ 1, OPUS_CHANNEL_MODE_MONO },
-	{ 2, OPUS_CHANNEL_MODE_STEREO },
-	{ 0 },
-};
-
-static const struct a2dp_sampling a2dp_opus_samplings[] = {
-	{ 48000, OPUS_SAMPLING_FREQ_48000 },
-	{ 0 },
-};
-
 static int a2dp_opus_configuration_select(
-		const struct a2dp_codec *codec,
+		const struct a2dp_sep *sep,
 		void *capabilities) {
 
 	a2dp_opus_t *caps = capabilities;
 	const a2dp_opus_t saved = *caps;
 
 	/* narrow capabilities to values supported by BlueALSA */
-	if (a2dp_filter_capabilities(codec, &codec->capabilities,
+	if (a2dp_filter_capabilities(sep, &sep->capabilities,
 				caps, sizeof(*caps)) != 0)
 		return -1;
 
-	const struct a2dp_sampling *sampling;
-	if ((sampling = a2dp_sampling_select(a2dp_opus_samplings, caps->frequency)) != NULL)
-		caps->frequency = sampling->value;
+	unsigned int sampling_freq = 0;
+	if (a2dp_bit_mapping_foreach(a2dp_opus_samplings, caps->sampling_freq,
+				a2dp_foreach_get_best_sampling_freq, &sampling_freq) != -1)
+		caps->sampling_freq = sampling_freq;
 	else {
-		error("Opus: No supported sampling frequencies: %#x", saved.frequency);
+		error("Opus: No supported sampling frequencies: %#x", saved.sampling_freq);
 		return errno = ENOTSUP, -1;
 	}
 
@@ -321,9 +323,10 @@ static int a2dp_opus_configuration_select(
 		return errno = ENOTSUP, -1;
 	}
 
-	const struct a2dp_channels *channels;
-	if ((channels = a2dp_channels_select(a2dp_opus_channels, caps->channel_mode)) != NULL)
-		caps->channel_mode = channels->value;
+	unsigned int channel_mode = 0;
+	if (a2dp_bit_mapping_foreach(a2dp_opus_channels, caps->channel_mode,
+				a2dp_foreach_get_best_channel_mode, &channel_mode) != -1)
+		caps->channel_mode = channel_mode;
 	else {
 		error("Opus: No supported channel modes: %#x", saved.channel_mode);
 		return errno = ENOTSUP, -1;
@@ -333,19 +336,19 @@ static int a2dp_opus_configuration_select(
 }
 
 static int a2dp_opus_configuration_check(
-		const struct a2dp_codec *codec,
+		const struct a2dp_sep *sep,
 		const void *configuration) {
 
 	const a2dp_opus_t *conf = configuration;
 	a2dp_opus_t conf_v = *conf;
 
 	/* validate configuration against BlueALSA capabilities */
-	if (a2dp_filter_capabilities(codec, &codec->capabilities,
+	if (a2dp_filter_capabilities(sep, &sep->capabilities,
 				&conf_v, sizeof(conf_v)) != 0)
 		return A2DP_CHECK_ERR_SIZE;
 
-	if (a2dp_sampling_lookup(a2dp_opus_samplings, conf_v.frequency) == NULL) {
-		debug("Opus: Invalid sampling frequency: %#x", conf->frequency);
+	if (a2dp_bit_mapping_lookup(a2dp_opus_samplings, conf_v.sampling_freq) == 0) {
+		debug("Opus: Invalid sampling frequency: %#x", conf->sampling_freq);
 		return A2DP_CHECK_ERR_SAMPLING;
 	}
 
@@ -358,7 +361,7 @@ static int a2dp_opus_configuration_check(
 		return A2DP_CHECK_ERR_FRAME_DURATION;
 	}
 
-	if (a2dp_channels_lookup(a2dp_opus_channels, conf_v.channel_mode) == NULL) {
+	if (a2dp_bit_mapping_lookup(a2dp_opus_channels, conf_v.channel_mode) == 0) {
 		debug("Opus: Invalid channel mode: %#x", conf->channel_mode);
 		return A2DP_CHECK_ERR_CHANNEL_MODE;
 	}
@@ -368,26 +371,26 @@ static int a2dp_opus_configuration_check(
 
 static int a2dp_opus_transport_init(struct ba_transport *t) {
 
-	const struct a2dp_channels *channels;
-	if ((channels = a2dp_channels_lookup(a2dp_opus_channels,
-					t->a2dp.configuration.opus.channel_mode)) == NULL)
+	unsigned int channels;
+	if ((channels = a2dp_bit_mapping_lookup(a2dp_opus_channels,
+					t->a2dp.configuration.opus.channel_mode)) == 0)
 		return -1;
 
-	const struct a2dp_sampling *sampling;
-	if ((sampling = a2dp_sampling_lookup(a2dp_opus_samplings,
-					t->a2dp.configuration.opus.frequency)) == NULL)
+	unsigned int sampling;
+	if ((sampling = a2dp_bit_mapping_lookup(a2dp_opus_samplings,
+					t->a2dp.configuration.opus.sampling_freq)) == 0)
 		return -1;
 
 	t->a2dp.pcm.format = BA_TRANSPORT_PCM_FORMAT_S16_2LE;
-	t->a2dp.pcm.channels = channels->count;
-	t->a2dp.pcm.sampling = sampling->frequency;
+	t->a2dp.pcm.channels = channels;
+	t->a2dp.pcm.sampling = sampling;
 
 	return 0;
 }
 
-static int a2dp_opus_source_init(struct a2dp_codec *codec) {
+static int a2dp_opus_source_init(struct a2dp_sep *sep) {
 	if (config.a2dp.force_mono)
-		codec->capabilities.opus.channel_mode = OPUS_CHANNEL_MODE_MONO;
+		sep->capabilities.opus.channel_mode = OPUS_CHANNEL_MODE_MONO;
 	return 0;
 }
 
@@ -395,13 +398,13 @@ static int a2dp_opus_source_transport_start(struct ba_transport *t) {
 	return ba_transport_pcm_start(&t->a2dp.pcm, a2dp_opus_enc_thread, "ba-a2dp-opus");
 }
 
-struct a2dp_codec a2dp_opus_source = {
-	.dir = A2DP_SOURCE,
-	.codec_id = A2DP_CODEC_VENDOR_OPUS,
+struct a2dp_sep a2dp_opus_source = {
+	.type = A2DP_SOURCE,
+	.codec_id = A2DP_CODEC_VENDOR_ID(OPUS_VENDOR_ID, OPUS_CODEC_ID),
 	.synopsis = "A2DP Source (Opus)",
 	.capabilities.opus = {
 		.info = A2DP_VENDOR_INFO_INIT(OPUS_VENDOR_ID, OPUS_CODEC_ID),
-		.frequency =
+		.sampling_freq =
 			OPUS_SAMPLING_FREQ_48000,
 		.frame_duration =
 			OPUS_FRAME_DURATION_100 |
@@ -422,13 +425,13 @@ static int a2dp_opus_sink_transport_start(struct ba_transport *t) {
 	return ba_transport_pcm_start(&t->a2dp.pcm, a2dp_opus_dec_thread, "ba-a2dp-opus");
 }
 
-struct a2dp_codec a2dp_opus_sink = {
-	.dir = A2DP_SINK,
-	.codec_id = A2DP_CODEC_VENDOR_OPUS,
+struct a2dp_sep a2dp_opus_sink = {
+	.type = A2DP_SINK,
+	.codec_id = A2DP_CODEC_VENDOR_ID(OPUS_VENDOR_ID, OPUS_CODEC_ID),
 	.synopsis = "A2DP Sink (Opus)",
 	.capabilities.opus = {
 		.info = A2DP_VENDOR_INFO_INIT(OPUS_VENDOR_ID, OPUS_CODEC_ID),
-		.frequency =
+		.sampling_freq =
 			OPUS_SAMPLING_FREQ_48000,
 		.frame_duration =
 			OPUS_FRAME_DURATION_100 |

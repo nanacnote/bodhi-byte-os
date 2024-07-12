@@ -10,6 +10,9 @@
 
 #if HAVE_CONFIG_H
 # include <config.h>
+# define ENABLE_APTX_IO_TEST    (ENABLE_APTX && HAVE_APTX_DECODE)
+# define ENABLE_APTX_HD_IO_TEST (ENABLE_APTX_HD && HAVE_APTX_HD_DECODE)
+# define ENABLE_LDAC_IO_TEST    (ENABLE_LDAC && HAVE_LDAC_DECODE)
 #endif
 
 #include <errno.h>
@@ -31,7 +34,7 @@
 #include <bluetooth/hci.h>
 #include <check.h>
 #include <glib.h>
-#if ENABLE_LDAC
+#if ENABLE_LDAC_IO_TEST
 # include <ldacBT.h>
 #endif
 #if HAVE_SNDFILE
@@ -42,10 +45,10 @@
 #if ENABLE_AAC
 # include "a2dp-aac.h"
 #endif
-#if ENABLE_APTX
+#if ENABLE_APTX_IO_TEST
 # include "a2dp-aptx.h"
 #endif
-#if ENABLE_APTX_HD
+#if ENABLE_APTX_HD_IO_TEST
 # include "a2dp-aptx-hd.h"
 #endif
 #if ENABLE_FASTSTREAM
@@ -54,7 +57,7 @@
 #if ENABLE_LC3PLUS
 # include "a2dp-lc3plus.h"
 #endif
-#if ENABLE_LDAC
+#if ENABLE_LDAC_IO_TEST
 # include "a2dp-ldac.h"
 #endif
 #if ENABLE_MPEG
@@ -78,7 +81,7 @@
 #if ENABLE_OFONO
 # include "ofono.h"
 #endif
-#if ENABLE_LC3PLUS || ENABLE_LDAC
+#if ENABLE_LC3PLUS || ENABLE_LDAC_IO_TEST
 # include "rtp.h"
 #endif
 #include "storage.h"
@@ -131,9 +134,10 @@ void ba_rfcomm_destroy(struct ba_rfcomm *r) {
 int ba_rfcomm_send_signal(struct ba_rfcomm *r, enum ba_rfcomm_signal sig) {
 	debug("%s: %p: %#x", __func__, (void *)r, sig); (void)r; (void)sig; return 0; }
 bool bluez_a2dp_set_configuration(const char *current_dbus_sep_path,
-		const struct a2dp_sep *sep, GError **error) {
+		const struct a2dp_sep *sep, const void *configuration, GError **error) {
 	debug("%s: %s: %p", __func__, current_dbus_sep_path, sep);
-	(void)current_dbus_sep_path; (void)sep; (void)error; return false; }
+	(void)current_dbus_sep_path; (void)sep; (void)configuration; (void)error;
+	return false; }
 int ofono_call_volume_update(struct ba_transport *t) {
 	debug("%s: %p", __func__, t); (void)t; return 0; }
 int midi_transport_alsa_seq_create(struct ba_transport *t) { (void)t; return 0; }
@@ -146,7 +150,7 @@ int storage_pcm_data_sync(struct ba_transport_pcm *pcm) { (void)pcm; return 0; }
 int storage_pcm_data_update(const struct ba_transport_pcm *pcm) { (void)pcm; return 0; }
 
 static const a2dp_sbc_t config_sbc_44100_stereo = {
-	.frequency = SBC_SAMPLING_FREQ_44100,
+	.sampling_freq = SBC_SAMPLING_FREQ_44100,
 	.channel_mode = SBC_CHANNEL_MODE_STEREO,
 	.block_length = SBC_BLOCK_LENGTH_16,
 	.subbands = SBC_SUBBANDS_8,
@@ -159,29 +163,29 @@ __attribute__ ((unused))
 static a2dp_mpeg_t config_mp3_44100_stereo = {
 	.layer = MPEG_LAYER_MP3,
 	.channel_mode = MPEG_CHANNEL_MODE_STEREO,
-	.frequency = MPEG_SAMPLING_FREQ_44100,
+	.sampling_freq = MPEG_SAMPLING_FREQ_44100,
 	A2DP_MPEG_INIT_BITRATE(0xFFFF)
 };
 
 __attribute__ ((unused))
 static a2dp_aac_t config_aac_44100_stereo = {
 	.object_type = AAC_OBJECT_TYPE_MPEG2_LC,
-	A2DP_AAC_INIT_FREQUENCY(AAC_SAMPLING_FREQ_44100)
-	.channels = AAC_CHANNELS_2,
+	A2DP_AAC_INIT_SAMPLING_FREQ(AAC_SAMPLING_FREQ_44100)
+	.channel_mode = AAC_CHANNEL_MODE_STEREO,
 	A2DP_AAC_INIT_BITRATE(0xFFFF)
 };
 
 __attribute__ ((unused))
 static const a2dp_aptx_t config_aptx_44100_stereo = {
 	.info = A2DP_VENDOR_INFO_INIT(APTX_VENDOR_ID, APTX_CODEC_ID),
-	.frequency = APTX_SAMPLING_FREQ_44100,
+	.sampling_freq = APTX_SAMPLING_FREQ_44100,
 	.channel_mode = APTX_CHANNEL_MODE_STEREO,
 };
 
 __attribute__ ((unused))
 static const a2dp_aptx_hd_t config_aptx_hd_44100_stereo = {
 	.aptx.info = A2DP_VENDOR_INFO_INIT(APTX_HD_VENDOR_ID, APTX_HD_CODEC_ID),
-	.aptx.frequency = APTX_SAMPLING_FREQ_44100,
+	.aptx.sampling_freq = APTX_SAMPLING_FREQ_44100,
 	.aptx.channel_mode = APTX_CHANNEL_MODE_STEREO,
 };
 
@@ -189,28 +193,28 @@ __attribute__ ((unused))
 static const a2dp_faststream_t config_faststream_44100_16000 = {
 	.info = A2DP_VENDOR_INFO_INIT(FASTSTREAM_VENDOR_ID, FASTSTREAM_CODEC_ID),
 	.direction = FASTSTREAM_DIRECTION_MUSIC | FASTSTREAM_DIRECTION_VOICE,
-	.frequency_music = FASTSTREAM_SAMPLING_FREQ_MUSIC_44100,
-	.frequency_voice = FASTSTREAM_SAMPLING_FREQ_VOICE_16000,
+	.sampling_freq_music = FASTSTREAM_SAMPLING_FREQ_MUSIC_44100,
+	.sampling_freq_voice = FASTSTREAM_SAMPLING_FREQ_VOICE_16000,
 };
 
 __attribute__ ((unused))
 static const a2dp_lc3plus_t config_lc3plus_48000_stereo = {
 	.info = A2DP_VENDOR_INFO_INIT(LC3PLUS_VENDOR_ID, LC3PLUS_CODEC_ID),
 	.frame_duration = LC3PLUS_FRAME_DURATION_050,
-	.channels = LC3PLUS_CHANNELS_2,
-	A2DP_LC3PLUS_INIT_FREQUENCY(LC3PLUS_SAMPLING_FREQ_48000)
+	.channel_mode = LC3PLUS_CHANNEL_MODE_STEREO,
+	A2DP_LC3PLUS_INIT_SAMPLING_FREQ(LC3PLUS_SAMPLING_FREQ_48000)
 };
 
 __attribute__ ((unused))
-static const a2dp_ldac_t config_ldac_44100_stereo = {
+static const a2dp_ldac_t config_ldac_48000_stereo = {
 	.info = A2DP_VENDOR_INFO_INIT(LDAC_VENDOR_ID, LDAC_CODEC_ID),
-	.frequency = LDAC_SAMPLING_FREQ_44100,
+	.sampling_freq = LDAC_SAMPLING_FREQ_48000,
 	.channel_mode = LDAC_CHANNEL_MODE_STEREO,
 };
 
 __attribute__ ((unused))
 static const a2dp_opus_t config_opus_48000_stereo = {
-	.frequency = OPUS_SAMPLING_FREQ_48000,
+	.sampling_freq = OPUS_SAMPLING_FREQ_48000,
 	.frame_duration = OPUS_FRAME_DURATION_100,
 	.channel_mode = OPUS_CHANNEL_MODE_STEREO,
 };
@@ -664,14 +668,14 @@ static struct ba_transport *test_transport_new_a2dp(
 		struct ba_device *device,
 		enum ba_transport_profile profile,
 		const char *dbus_path,
-		const struct a2dp_codec *codec,
+		const struct a2dp_sep *sep,
 		const void *configuration) {
 #if DEBUG
 	if (input_bt_file != NULL)
 		configuration = &btdin->a2dp_configuration;
 #endif
 	struct ba_transport *t = ba_transport_new_a2dp(device, profile, ":test",
-			dbus_path, codec, configuration);
+			dbus_path, sep, configuration);
 	t->acquire = test_transport_acquire;
 	t->release = test_transport_release_bt_a2dp;
 	return t;
@@ -1009,7 +1013,7 @@ CK_START_TEST(test_a2dp_aac) {
 } CK_END_TEST
 #endif
 
-#if ENABLE_APTX
+#if ENABLE_APTX_IO_TEST
 CK_START_TEST(test_a2dp_aptx) {
 
 	struct ba_transport *t1 = test_transport_new_a2dp(device1,
@@ -1023,17 +1027,13 @@ CK_START_TEST(test_a2dp_aptx) {
 	struct ba_transport_pcm *t2_pcm = &t2->a2dp.pcm;
 
 	if (aging_duration) {
-#if HAVE_APTX_DECODE
 		t1->mtu_read = t1->mtu_write = t2->mtu_read = t2->mtu_write = 400;
 		test_io(t1_pcm, t2_pcm, a2dp_aptx_enc_thread, a2dp_aptx_dec_thread, 4 * 1024);
-#endif
 	}
 	else {
 		t1->mtu_read = t1->mtu_write = t2->mtu_read = t2->mtu_write = 40;
 		test_io(t1_pcm, t2_pcm, a2dp_aptx_enc_thread, test_io_thread_dump_bt, 2 * 1024);
-#if HAVE_APTX_DECODE
 		test_io(t1_pcm, t2_pcm, test_io_thread_dump_pcm, a2dp_aptx_dec_thread, 2 * 1024);
-#endif
 	};
 
 	ba_transport_destroy(t1);
@@ -1042,7 +1042,7 @@ CK_START_TEST(test_a2dp_aptx) {
 } CK_END_TEST
 #endif
 
-#if ENABLE_APTX_HD
+#if ENABLE_APTX_HD_IO_TEST
 CK_START_TEST(test_a2dp_aptx_hd) {
 
 	struct ba_transport *t1 = test_transport_new_a2dp(device1,
@@ -1056,17 +1056,13 @@ CK_START_TEST(test_a2dp_aptx_hd) {
 	struct ba_transport_pcm *t2_pcm = &t2->a2dp.pcm;
 
 	if (aging_duration) {
-#if HAVE_APTX_HD_DECODE
 		t1->mtu_read = t1->mtu_write = t2->mtu_read = t2->mtu_write = 600;
 		test_io(t1_pcm, t2_pcm, a2dp_aptx_hd_enc_thread, a2dp_aptx_hd_dec_thread, 4 * 1024);
-#endif
 	}
 	else {
 		t1->mtu_read = t1->mtu_write = t2->mtu_read = t2->mtu_write = 60;
 		test_io(t1_pcm, t2_pcm, a2dp_aptx_hd_enc_thread, test_io_thread_dump_bt, 2 * 1024);
-#if HAVE_APTX_HD_DECODE
 		test_io(t1_pcm, t2_pcm, test_io_thread_dump_pcm, a2dp_aptx_hd_dec_thread, 2 * 1024);
-#endif
 	};
 
 	ba_transport_destroy(t1);
@@ -1164,7 +1160,7 @@ CK_START_TEST(test_a2dp_lc3plus) {
 } CK_END_TEST
 #endif
 
-#if ENABLE_LDAC
+#if ENABLE_LDAC_IO_TEST
 CK_START_TEST(test_a2dp_ldac) {
 
 	config.ldac_abr = true;
@@ -1172,28 +1168,24 @@ CK_START_TEST(test_a2dp_ldac) {
 
 	struct ba_transport *t1 = test_transport_new_a2dp(device1,
 			BA_TRANSPORT_PROFILE_A2DP_SOURCE, "/path/ldac", &a2dp_ldac_source,
-			&config_ldac_44100_stereo);
+			&config_ldac_48000_stereo);
 	struct ba_transport *t2 = test_transport_new_a2dp(device2,
 			BA_TRANSPORT_PROFILE_A2DP_SINK, "/path/ldac", &a2dp_ldac_sink,
-			&config_ldac_44100_stereo);
+			&config_ldac_48000_stereo);
 
 	struct ba_transport_pcm *t1_pcm = &t1->a2dp.pcm;
 	struct ba_transport_pcm *t2_pcm = &t2->a2dp.pcm;
 
 	if (aging_duration) {
-#if HAVE_LDAC_DECODE
 		t1->mtu_read = t1->mtu_write = t2->mtu_read = t2->mtu_write =
 			RTP_HEADER_LEN + sizeof(rtp_media_header_t) + 990 + 6;
 		test_io(t1_pcm, t2_pcm, a2dp_ldac_enc_thread, a2dp_ldac_dec_thread, 4 * 1024);
-#endif
 	}
 	else {
 		t1->mtu_read = t1->mtu_write = t2->mtu_read = t2->mtu_write =
 			RTP_HEADER_LEN + sizeof(rtp_media_header_t) + 660 + 6;
 		test_io(t1_pcm, t2_pcm, a2dp_ldac_enc_thread, test_io_thread_dump_bt, 2 * 1024);
-#if HAVE_LDAC_DECODE
 		test_io(t1_pcm, t2_pcm, test_io_thread_dump_pcm, a2dp_ldac_dec_thread, 2 * 1024);
-#endif
 	}
 
 	ba_transport_destroy(t1);
@@ -1321,24 +1313,24 @@ int main(int argc, char *argv[]) {
 #if ENABLE_AAC
 		{ a2dp_codecs_codec_id_to_string(A2DP_CODEC_MPEG24), test_a2dp_aac },
 #endif
-#if ENABLE_APTX
-		{ a2dp_codecs_codec_id_to_string(A2DP_CODEC_VENDOR_APTX), test_a2dp_aptx },
+#if ENABLE_APTX_IO_TEST
+		{ a2dp_codecs_codec_id_to_string(A2DP_CODEC_VENDOR_ID(APTX_VENDOR_ID, APTX_CODEC_ID)), test_a2dp_aptx },
 #endif
-#if ENABLE_APTX_HD
-		{ a2dp_codecs_codec_id_to_string(A2DP_CODEC_VENDOR_APTX_HD), test_a2dp_aptx_hd },
+#if ENABLE_APTX_HD_IO_TEST
+		{ a2dp_codecs_codec_id_to_string(A2DP_CODEC_VENDOR_ID(APTX_HD_VENDOR_ID, APTX_HD_CODEC_ID)), test_a2dp_aptx_hd },
 #endif
 #if ENABLE_FASTSTREAM
-		{ a2dp_codecs_codec_id_to_string(A2DP_CODEC_VENDOR_FASTSTREAM), test_a2dp_faststream_music },
-		{ a2dp_codecs_codec_id_to_string(A2DP_CODEC_VENDOR_FASTSTREAM), test_a2dp_faststream_voice },
+		{ a2dp_codecs_codec_id_to_string(A2DP_CODEC_VENDOR_ID(FASTSTREAM_VENDOR_ID, FASTSTREAM_CODEC_ID)), test_a2dp_faststream_music },
+		{ a2dp_codecs_codec_id_to_string(A2DP_CODEC_VENDOR_ID(FASTSTREAM_VENDOR_ID, FASTSTREAM_CODEC_ID)), test_a2dp_faststream_voice },
 #endif
 #if ENABLE_LC3PLUS
-		{ a2dp_codecs_codec_id_to_string(A2DP_CODEC_VENDOR_LC3PLUS), test_a2dp_lc3plus },
+		{ a2dp_codecs_codec_id_to_string(A2DP_CODEC_VENDOR_ID(LC3PLUS_VENDOR_ID, LC3PLUS_CODEC_ID)), test_a2dp_lc3plus },
 #endif
-#if ENABLE_LDAC
-		{ a2dp_codecs_codec_id_to_string(A2DP_CODEC_VENDOR_LDAC), test_a2dp_ldac },
+#if ENABLE_LDAC_IO_TEST
+		{ a2dp_codecs_codec_id_to_string(A2DP_CODEC_VENDOR_ID(LDAC_VENDOR_ID, LDAC_CODEC_ID)), test_a2dp_ldac },
 #endif
 #if ENABLE_OPUS
-		{ a2dp_codecs_codec_id_to_string(A2DP_CODEC_VENDOR_OPUS), test_a2dp_opus },
+		{ a2dp_codecs_codec_id_to_string(A2DP_CODEC_VENDOR_ID(OPUS_VENDOR_ID, OPUS_CODEC_ID)), test_a2dp_opus },
 #endif
 		{ hfp_codec_id_to_string(HFP_CODEC_CVSD), test_sco_cvsd },
 #if ENABLE_MSBC

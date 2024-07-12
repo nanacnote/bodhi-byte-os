@@ -402,7 +402,7 @@ struct ba_transport *ba_transport_new_a2dp(
 		enum ba_transport_profile profile,
 		const char *dbus_owner,
 		const char *dbus_path,
-		const struct a2dp_codec *codec,
+		const struct a2dp_sep *sep,
 		const void *configuration) {
 
 	const bool is_sink = profile & BA_TRANSPORT_PROFILE_A2DP_SINK;
@@ -417,8 +417,8 @@ struct ba_transport *ba_transport_new_a2dp(
 	pthread_cond_init(&t->a2dp.state_changed_cond, NULL);
 	t->a2dp.state = BLUEZ_A2DP_TRANSPORT_STATE_IDLE;
 
-	t->a2dp.codec = codec;
-	memcpy(&t->a2dp.configuration, configuration, codec->capabilities_size);
+	t->a2dp.sep = sep;
+	memcpy(&t->a2dp.configuration, configuration, sep->capabilities_size);
 
 	err |= transport_pcm_init(&t->a2dp.pcm,
 			is_sink ? BA_TRANSPORT_PCM_MODE_SOURCE : BA_TRANSPORT_PCM_MODE_SINK,
@@ -442,7 +442,7 @@ struct ba_transport *ba_transport_new_a2dp(
 	t->acquire = transport_acquire_bt_a2dp;
 	t->release = transport_release_bt_a2dp;
 
-	ba_transport_set_codec(t, codec->codec_id);
+	ba_transport_set_codec(t, sep->codec_id);
 
 	storage_pcm_data_sync(&t->a2dp.pcm);
 	storage_pcm_data_sync(&t->a2dp.pcm_bc);
@@ -461,7 +461,8 @@ fail:
 	return NULL;
 }
 
-static int transport_acquire_bt_sco(struct ba_transport *t) {
+__attribute__ ((weak))
+int transport_acquire_bt_sco(struct ba_transport *t) {
 
 	struct ba_device *d = t->d;
 	int fd = -1;
@@ -693,7 +694,7 @@ const char *ba_transport_debug_name(
 		return "NONE";
 	case BA_TRANSPORT_PROFILE_A2DP_SOURCE:
 	case BA_TRANSPORT_PROFILE_A2DP_SINK:
-		return t->a2dp.codec->synopsis;
+		return t->a2dp.sep->synopsis;
 	case BA_TRANSPORT_PROFILE_HFP_HF:
 		switch (codec_id) {
 		case HFP_CODEC_UNDEFINED:
@@ -893,7 +894,8 @@ void ba_transport_unref(struct ba_transport *t) {
 
 int ba_transport_select_codec_a2dp(
 		struct ba_transport *t,
-		const struct a2dp_sep *sep) {
+		const struct a2dp_sep *sep,
+		const void *configuration) {
 
 	if (!(t->profile & BA_TRANSPORT_PROFILE_MASK_A2DP))
 		return errno = ENOTSUP, -1;
@@ -902,7 +904,7 @@ int ba_transport_select_codec_a2dp(
 
 	/* the same codec with the same configuration already selected */
 	if (t->codec_id == sep->codec_id &&
-			memcmp(&sep->configuration, &t->a2dp.configuration, sep->capabilities_size) == 0)
+			memcmp(configuration, &t->a2dp.configuration, sep->capabilities_size) == 0)
 		goto final;
 
 	/* A2DP codec selection is in fact a transport recreation - new transport
@@ -914,7 +916,7 @@ int ba_transport_select_codec_a2dp(
 	storage_pcm_data_update(&t->a2dp.pcm_bc);
 
 	GError *err = NULL;
-	if (!bluez_a2dp_set_configuration(t->a2dp.bluez_dbus_sep_path, sep, &err)) {
+	if (!bluez_a2dp_set_configuration(t->a2dp.bluez_dbus_sep_path, sep, configuration, &err)) {
 		error("Couldn't set A2DP configuration: %s", err->message);
 		pthread_mutex_unlock(&t->codec_id_mtx);
 		g_error_free(err);
