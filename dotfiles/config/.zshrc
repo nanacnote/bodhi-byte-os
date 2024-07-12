@@ -64,6 +64,7 @@ add-zsh-hook preexec zsh-hook-set-block-cursor
 
 # --- plugins ---
 source /usr/share/zsh/plugins/zsh-autosuggestions/zsh-autosuggestions.zsh
+source <(fzf --zsh)
 
 
 
