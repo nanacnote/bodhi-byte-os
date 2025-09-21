@@ -55,6 +55,6 @@ SUMMARY=$(echo "$SUMMARY_RESPONSE" | jq -r '.choices[0].message.content // empty
 
 if [ -n "$SUMMARY" ]; then
   UPDATED_CONTEXT=$(jq --arg sum "$SUMMARY" \
-    '. + [{role: "assistant", content: $sum}]' "$SESSION_FILE")
+    '. + [{role: "user", content: $sum}]' "$SESSION_FILE")
   echo "$UPDATED_CONTEXT" > "$SESSION_FILE"
 fi
