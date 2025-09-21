@@ -6,7 +6,7 @@ CONTENT="${1:?Missing query!}"
 GROQ_API_KEY="${GROQ_API_KEY:-}"
 ENDPOINT="https://api.groq.com/openai/v1/chat/completions"
 
-JSON_DATA='{"messages": [{"role": "user", "content": "'"$CONTENT"'"}], "model": "llama3-70b-8192"}'
+JSON_DATA='{"messages": [{"role": "user", "content": "'"$CONTENT"'"}], "model": "llama-3.3-70b-versatile"}'
 
 RESPONSE=$(curl -s -X POST \
   "$ENDPOINT" \
