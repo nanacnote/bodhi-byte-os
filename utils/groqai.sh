@@ -42,7 +42,8 @@ echo "$CHOICES" | bat -l md
 
 SUMMARY_JSON=$(jq -n \
   --arg text "$CHOICES" \
-  '{messages: [{role: "user", content: "Summarize the following into a single compact paragraph for conversation memory:\n\n" + $text}], model: "'"$MODEL"'"}')
+  --arg model "$MODEL" \
+  '{messages: [{role: "user", content: ("Summarize the following into a single compact paragraph for conversation memory:\n\n" + $text)}], model: $model}')
 
 SUMMARY_RESPONSE=$(curl -s -X POST \
   "$ENDPOINT" \
