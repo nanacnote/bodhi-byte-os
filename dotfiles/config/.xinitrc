@@ -37,8 +37,8 @@ fi
 #       CUSTOM      #
 #####################
 feh --no-fehbg --bg-fill "${HOME}/Documents/images/wallpaper/current"
+picom -b
 
 xautolock -time 3 -locker "slock" -detectsleep &
 dwm-status-bar start &
-picom &
 exec dwm
