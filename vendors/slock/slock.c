@@ -14,6 +14,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <unistd.h>
+#include <time.h>
 #include <sys/types.h>
 #include <X11/extensions/Xrandr.h>
 #ifdef XINERAMA
@@ -29,6 +30,8 @@
 #include "util.h"
 
 char *argv0;
+
+static time_t locktime;
 
 enum {
 	INIT,
@@ -183,6 +186,7 @@ readpw(Display *dpy, struct xrandr *rr, struct lock **locks, int nscreens,
 	oldc = INIT;
 
 	while (running && !XNextEvent(dpy, &ev)) {
+		running = !((time(NULL) - locktime < timetocancel) && (ev.type == MotionNotify));
 		if (ev.type == KeyPress) {
 			explicit_bzero(&buf, sizeof(buf));
 			num = XLookupString(&ev.xkey, buf, sizeof(buf), &ksym, 0);
@@ -353,6 +357,7 @@ lockscreen(Display *dpy, struct xrandr *rr, int screen)
 				XRRSelectInput(dpy, lock->win, RRScreenChangeNotifyMask);
 
 			XSelectInput(dpy, lock->root, SubstructureNotifyMask);
+			locktime = time(NULL);
 			drawlogo(dpy, lock, INIT);
 			return lock;
 		}
